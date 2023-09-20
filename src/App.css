@@ -1,0 +1,380 @@
+.side-panel-minimized,
+.side-panel-minimized * {
+  box-sizing: border-box;
+}
+.side-panel-minimized {
+  background: var(--container-background-color, #f7f7f7);
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+}
+.side-card-panel {
+  background: var(--container-backdrop-color, #e0e0e0);
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 48px;
+  padding: 0px;
+  overflow: hidden;
+}
+.container-content {
+  border-style: solid;
+  border-color: var(--border-outline-color, rgba(0, 0, 0, 0.08));
+  border-width: 0px 1px 0px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 48px;
+  position: relative;
+}
+.container-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.tab {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  position: relative;
+}
+.button-frame {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.button {
+  background: var(--normal-enabled-background-color, #ffffff);
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--normal-enabled-border-color, #cdcdcd);
+  border-width: 1px;
+  padding: 4px 0px 4px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+.leading-icon {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.textbox {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: center;
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 16px;
+  position: relative;
+}
+.label {
+  color: var(--element-active-color, #1a1a1a);
+  text-align: center;
+  font: var(--ui-label, 400 12px/16px "Noto Sans", sans-serif);
+  position: relative;
+}
+.dividers {
+  background: var(--border-divider-color, rgba(0, 0, 0, 0.08));
+  border-radius: 1px;
+  flex-shrink: 0;
+  width: 24px;
+  height: 1px;
+  position: relative;
+}
+.leading-icon2 {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.leading-icon3 {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.button2 {
+  background: var(--normal-pressed-background-color, #e0e0e0);
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--normal-pressed-border-color, rgba(0, 0, 0, 0.2));
+  border-width: 1px;
+  padding: 4px 0px 4px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+.leading-icon4 {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.leading-icon5 {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.panel-controls {
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 48px;
+  position: relative;
+}
+.button-expand {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 48px;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+}
+.button3 {
+  background: var(--flat-enabled-background-color, #000000);
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--flat-enabled-border-color, #000000);
+  border-width: 1px;
+  padding: 4px 0px 4px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+.leading-icon6 {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.topbar {
+  background: var(--container-global-color, #fcfcfc);
+  height: 48px;
+  box-shadow: var(
+    --shadow-raised-box-shadow,
+    0px 2px 4px 0px rgba(0, 0, 0, 0.2)
+  );
+  overflow: auto;
+  
+}
+.title-area {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  position: absolute;
+  left: 0px;
+}
+.menu-button {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 48px;
+  position: relative;
+}
+.leading-icon7 {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.titles {
+  padding: 0px 8px 0px 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.app {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.app-title {
+  color: var(--element-active-color, #1a1a1a);
+  text-align: left;
+  font: var(--ui-body, 400 16px/24px "Noto Sans", sans-serif);
+  position: relative;
+}
+.section-title {
+  color: var(--element-active-color, #1a1a1a);
+  text-align: left;
+  font: var(--ui-body-active, 600 16px/24px "Noto Sans", sans-serif);
+  position: relative;
+}
+.function-area {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-end;
+  position: absolute;
+  right: 0px;
+  top: calc(50% - 24px);
+}
+.alerts {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.alert-button {
+  padding: 0px 8px 0px 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  position: relative;
+}
+.alert-button2 {
+  background: var(--flat-enabled-background-color, #000000);
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--flat-enabled-border-color, #000000);
+  border-width: 1px;
+  padding: 4px 8px 4px 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  position: relative;
+}
+.icon8 {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.user {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  position: relative;
+}
+.icon-button {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 48px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.leading-icon8 {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.dimming {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 48px;
+  position: relative;
+}
+.leading-icon9 {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.apps {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 48px;
+  position: relative;
+}
+.button4 {
+  background: var(--normal-hover-background-color, #f0f0f0);
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--flat-enabled-border-color, #000000);
+  border-width: 1px;
+  padding: 4px 0px 4px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+.leading-icon10 {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
