@@ -1,24 +1,28 @@
+import { LatLngTuple } from 'leaflet';
 import { MapContainer, Marker, Popup } from 'react-leaflet'
 import { TileLayer } from 'react-leaflet'
 import { useMap } from 'react-leaflet'
+import { AgentMarker } from './AgentMarker';
 
 export interface MapProp {
-
+  positions: number[][];
 }
-const position = {lat:51.505, lng:-0.09}
 
 export const Map = (
-    {}: MapProp
+    {
+      positions,
+    }: MapProp
     ) =>
     <MapContainer id="map" className="h-100" center={[55.627884, 12.515491]} zoom={4} scrollWheelZoom={true}>
   <TileLayer
     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   />
-  <Marker position={[55.627884, 12.515491]}>
-    <Popup>
-      A pretty CSS3 popup. <br /> Easily customizable.
-    </Popup>
-  </Marker>
+  {
+    positions.map( (pos, idx) => 
+      <AgentMarker key={idx} position={pos as LatLngTuple} mrn={"test"}></AgentMarker>
+    )
+  }
+  
 </MapContainer>
         

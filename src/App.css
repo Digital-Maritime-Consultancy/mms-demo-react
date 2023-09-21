@@ -378,3 +378,280 @@
   position: relative;
   overflow: visible;
 }
+
+
+
+.type-app-notification-size-multi-line,
+.type-app-notification-size-multi-line * {
+  box-sizing: border-box;
+}
+.type-app-notification-size-multi-line {
+  background: var(--container-global-color, #fcfcfc);
+  border-radius: 12px;
+  border-style: solid;
+  border-color: var(--border-divider-color, rgba(0, 0, 0, 0.08));
+  border-width: 0px 0px 1px 0px;
+  padding: 8px 8px 8px 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 660px;
+  position: relative;
+  box-shadow: var(
+    --shadow-raised-box-shadow,
+    0px 2px 4px 0px rgba(0, 0, 0, 0.2)
+  );
+  overflow: hidden;
+}
+.container-content-notify {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+  position: relative;
+}
+.container-icon-notify {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 48px;
+  position: relative;
+}
+.container-icon2-notify {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  position: relative;
+}
+.app-button-notify {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.button-frame-notify {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.button-notify {
+  background: var(--normal-enabled-background-color, #ffffff);
+  border-radius: 100px;
+  border-style: solid;
+  border-color: var(--normal-enabled-border-color, #cdcdcd);
+  border-width: 1px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.leading-icon-notify {
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+  overflow: visible;
+}
+.icon2-notify {
+  background: var(--instrument-enhanced-secondary-color, #325b9a);
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  left: 24px;
+  top: 24px;
+}
+.icon3-notify {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  overflow: visible;
+}
+.container-message-notify {
+  padding: 4px 0px 4px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex: 1;
+  position: relative;
+}
+.container-title-notify {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.text-time-notify {
+  color: var(--element-active-color, #1a1a1a);
+  text-align: left;
+  font: var(--ui-label-active, 600 12px/16px "Noto Sans", sans-serif);
+  position: relative;
+}
+.container-text-notify {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.text-message-notify {
+  color: var(--element-active-color, #1a1a1a);
+  text-align: left;
+  font: var(--ui-body, 400 16px/24px "Noto Sans", sans-serif);
+  position: relative;
+  align-self: stretch;
+}
+.frame-2017-notify {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.frame-1834-notify {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.button-ack-notify {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.button2-notify {
+  background: var(--normal-enabled-background-color, #ffffff);
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--normal-enabled-border-color, #cdcdcd);
+  border-width: 1px;
+  padding: 4px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.content-notify {
+  padding: 0px 4px 0px 4px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.textbox-notify {
+  padding: 0px 8px 0px 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.label-notify {
+  color: var(--on-normal-active-color, #1a1a1a);
+  text-align: left;
+  font: var(--ui-button, 500 16px/24px "Noto Sans", sans-serif);
+  position: relative;
+}
+.container-ack-notify {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  position: relative;
+}
+.button-ack2-notify {
+  padding: 4px 0px 4px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+  position: relative;
+}
+.button-frame2-notify {
+  padding: 4px 0px 4px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.button3-notify {
+  background: var(--flat-enabled-background-color, #000000);
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--flat-enabled-border-color, #000000);
+  border-width: 1px;
+  padding: 4px 0px 4px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 32px;
+  position: relative;
+}
+.leading-icon2-notify {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
