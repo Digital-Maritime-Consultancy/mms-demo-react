@@ -9,6 +9,7 @@ import { FileInput } from "../FileInput";
 export interface ChatModalProp {
     ownMrn: string;
     mrnStoreUrl: string;
+    subjects: string[];
     message?: IApplicationMessage;
     sendMessage: (msg: Uint8Array, mode: MessageMode, endPoint: string) => void;
 }
@@ -24,6 +25,7 @@ export const ChatModal = (
         ownMrn,
         mrnStoreUrl,
         message,
+        subjects,
         sendMessage
     }: ChatModalProp
     ) =>
@@ -31,7 +33,6 @@ export const ChatModal = (
         const [bytes, setBytes] = useState<Uint8Array>();
         const [mode, setMode] = useState<MessageMode>(MessageMode.None);
         const [agents, setAgents] = useState<Agent[]>([]);
-        const [subjects, setSubjects] = useState(["Horses", "Boats", "MCP", "Weather"]);
         const [destination, setDestination] = useState("");
         const encoder = new TextEncoder();
         const [fileName, setFileName] = useState("");

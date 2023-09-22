@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Map } from './map/Map';
 import { Container, Row, Col } from 'react-bootstrap';
 import { ConnectModal } from './modal/ConnectModal';
 import { ChatModal, MessageMode } from './modal/ChatModal';
 import NotificationManager from './NotificationManager';
-import { ApplicationMessage, ApplicationMessageHeader, Connect, Disconnect, IApplicationMessage, MmtpMessage, MsgType, ProtocolMessage, ProtocolMessageType, Receive, Recipients, Send, Subscribe } from '../generated/mmtp';
+import { ApplicationMessage, ApplicationMessageHeader, Connect, Disconnect, IApplicationMessage, MmtpMessage, MsgType, ProtocolMessage, ProtocolMessageType, Receive, Recipients, Send, Subscribe, Unsubscribe } from '../generated/mmtp';
 import {v4 as uuidv4} from "uuid";
 import { disconnect } from 'process';
+import {SubscriptionManager} from './SubscriptionManager';
 
 export interface BrowserAgentProp {
     positions: number[][];
@@ -20,8 +21,10 @@ export const BrowserAgent = ({
   const [connected, setConnected] = useState(false);
   const [currentMessage, setCurrentMessage] = useState<IApplicationMessage>();
   const [lastSentMessage, setLastSentMessage] = useState<MmtpMessage>();
+  const [subjects, setSubjects] = useState(["Urn:mrn:mcp:service:dk-dmi:weather_on_route", "Boats", "MCP", "Weather"]);
   const [reconnectToken, setReconnectToken] = useState("");
   const [ws, setWs] = useState<WebSocket>();
+  let subModalRef: any = useRef();
   const fileBytesArray = new TextEncoder().encode("FILE"); // The bytes of the word "FILE"
     const [messageQueue, setMessageQueue] = useState("");
     let handleId: NodeJS.Timer;
@@ -52,6 +55,39 @@ export const BrowserAgent = ({
         const bytes = MmtpMessage.encode(receive).finish();
         setLastSentMessage(receive);
         ws!.send(bytes);
+    }
+
+    const subscribeMessage = (ps: string) => {
+        if (!ws || ws.readyState === WebSocket.CLOSED) return;
+        const subMsg = MmtpMessage.create({
+            uuid: uuidv4(),
+            msgType: MsgType.PROTOCOL_MESSAGE,
+            protocolMessage: ProtocolMessage.create({
+                protocolMsgType: ProtocolMessageType.SUBSCRIBE_MESSAGE,
+                subscribeMessage: Subscribe.create({
+                    subject: ps
+                })
+            })
+        });
+        const subMsgBytes = MmtpMessage.encode(subMsg).finish();
+        setLastSentMessage(subMsg);
+        ws!.send(subMsgBytes);
+    }
+
+    const unsubscribeMessage = (ps: string) => {
+        const unsubMsg = MmtpMessage.create({
+            uuid: uuidv4(),
+            msgType: MsgType.PROTOCOL_MESSAGE,
+            protocolMessage: ProtocolMessage.create({
+                protocolMsgType: ProtocolMessageType.UNSUBSCRIBE_MESSAGE,
+                unsubscribeMessage: Unsubscribe.create({
+                    subject: ps
+                })
+            })
+        });
+        const unsubMsgBytes = MmtpMessage.encode(unsubMsg).finish();
+        setLastSentMessage(unsubMsg);
+        ws!.send(unsubMsgBytes);
     }
 
     const sendMessage = (bytes: Uint8Array, mode: MessageMode, dest: string) => {
@@ -196,13 +232,19 @@ export const BrowserAgent = ({
       return true;
     }
 
-  function showReceivedMessage(msg: IApplicationMessage) {
+  const showReceivedMessage = (msg: IApplicationMessage) => {
     setCurrentMessage(msg);
+  }
+
+  const openSubModal = () => {
+    if(subModalRef && subModalRef.current){
+        subModalRef.current.openModal();
+      }
   }
   return (
     <Container fluid className="h-100 d-inline-block side-panel-minimized d-flex flex-column">
       <ConnectModal mrnStoreUrl={mrnStoreUrl} createConnection={createConnection} setMrn={setOwnMrn}></ConnectModal>
-      
+
       <Row className="topbar">
         <Col xs={3}>
             <div className="title-area">
@@ -276,6 +318,33 @@ export const BrowserAgent = ({
             <div className="dividers"></div>
             <div className="tab">
               <div className="button-frame">
+                <div className="button" onClick={openSubModal}>
+                <svg
+  className="_15-pa-list"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path d="M2 12.9917V10.9933V11V12.9983V12.9917Z" fill="#1A1A1A" />
+  <path d="M2.0198 8.99833V7H18.5L15 9L2.0198 8.99833Z" fill="#1A1A1A" />
+  <path d="M2 12.9983V11H9V13L2 12.9983Z" fill="#1A1A1A" />
+  <path d="M2 4.99833V3H19.8218V4.99833H2Z" fill="#1A1A1A" />
+  <path
+    d="M15.4901 16.75H16.2401L19.9901 19V8.5L16.2401 10.75H12.4901C11.6617 10.75 10.9901 11.4216 10.9901 12.25V15.25C10.9901 16.0784 11.6617 16.75 12.4901 16.75H13.2401V19.75H15.4901V16.75Z"
+    fill="#1A1A1A"
+  />
+</svg>
+                </div>
+              </div>
+              <div className="textbox">
+                <div className="label">Subscription</div>
+              </div>
+            </div>
+            <div className="dividers"></div>
+            <div className="tab">
+              <div className="button-frame">
                 <div className="button">
                 <svg
                   className="_01-close"
@@ -322,8 +391,9 @@ export const BrowserAgent = ({
         </div>
         </Col>
         <Col style={{ backgroundColor: '#f819fa' }} className="p-0">
-          <NotificationManager></NotificationManager>
-          <ChatModal mrnStoreUrl={mrnStoreUrl} ownMrn={ownMrn} message={currentMessage} sendMessage={sendMessage}></ChatModal>
+          {false && <NotificationManager />}
+          <SubscriptionManager ref={subModalRef} subscriptions={subjects} subscribeMessage={subscribeMessage} unsubscribeMessage={unsubscribeMessage}/>
+          <ChatModal mrnStoreUrl={mrnStoreUrl} ownMrn={ownMrn} message={currentMessage} sendMessage={sendMessage} subjects={subjects}></ChatModal>
           <Map positions={positions}></Map>
         </Col>
       </Row>
