@@ -2,80 +2,39 @@ import { Button, ListGroup, Modal } from "react-bootstrap"
 import { IApplicationMessage, MmtpMessage, MsgType, ProtocolMessage, ProtocolMessageType, Receive } from "../../generated/mmtp";
 import { Agent } from "../../model/Agent";
 import {v4 as uuidv4} from "uuid";
-import { Dispatch, SetStateAction } from "react";
-import { IncomingWindows } from "../IncomingWindow";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { MessageWindow } from "../MessageWindow";
 
 export interface ChatModalProp {
     ownMrn: string;
     mrnStoreUrl: string;
-    lastSentMessage?: MmtpMessage;
-    setLastSentMessage?: Dispatch<SetStateAction<MmtpMessage | undefined>>;
-    ws?: WebSocket;
+    message?: IApplicationMessage;
+    sendMessage: (msg: Uint8Array, mode: MessageMode, endPoint: string) => void;
 }
+
+export enum MessageMode {
+    None = 0,
+    Direct,
+    Multicast
+};
 
 export const ChatModal = (
     {
         ownMrn,
         mrnStoreUrl,
-        lastSentMessage,
-        setLastSentMessage,
-        ws,
+        message,
+        sendMessage
     }: ChatModalProp
     ) =>
     {
-        const possibleSubscriptions = ["Horses", "Boats", "MCP", "Weather"];
+        const [byte, setByte] = useState<Uint8Array>();
+        const [mode, setMode] = useState<MessageMode>(MessageMode.None);
+        const [agents, setAgents] = useState<Agent[]>([]);
+        const [subjects, setSubjects] = useState(["Horses", "Boats", "MCP", "Weather"]);
+        const [destination, setDestination] = useState("");
+        const encoder = new TextEncoder();
+        const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-        /*
-        function showReceivedMessage(msg: IApplicationMessage) {
-            const payload = msg.body;
-            const decoder = new TextDecoder();
-            if (arraysEqual(payload.subarray(0, 4), fileBytesArray)) {
-                for (let i = 4; i < payload.length; i++) {
-                    if (arraysEqual(payload.subarray(i, i + 4), fileBytesArray)) {
-                        const fileNameBytes = payload.subarray(4, i);
-                        const fileName = decoder.decode(fileNameBytes);
-                        const content = payload.subarray(i + 4);
-        
-                        incomingArea.append(`${msg.header.sender} sent: `);
-                        const downloadLink = document.createElement("a");
-                        downloadLink.href = "#";
-                        downloadLink.textContent = fileName;
-                        downloadLink.onclick = (e) => {
-                            let hidden_a = document.createElement('a');
-                            hidden_a.setAttribute('href', 'data:application/octet-stream;base64,' + bytesToBase64(content));
-                            hidden_a.setAttribute('download', fileName);
-                            document.body.appendChild(hidden_a);
-                            hidden_a.click();
-        
-                            e.preventDefault();
-                        };
-                        incomingArea.append(downloadLink);
-                        incomingArea.append('\n');
-                        break;
-                    }
-                }
-            } else {
-                const text = decoder.decode(payload);
-                incomingArea.append(`${msg.header.sender} sent: ${text}\n`);
-            }
-        }
-        */
-
-        const onReceive = () => {
-            const receive = MmtpMessage.create({
-                msgType: MsgType.PROTOCOL_MESSAGE,
-                uuid: uuidv4(),
-                protocolMessage: ProtocolMessage.create({
-                    protocolMsgType: ProtocolMessageType.RECEIVE_MESSAGE,
-                    receiveMessage: Receive.create({})
-                })
-            });
-            const bytes = MmtpMessage.encode(receive).finish();
-            console.log(setLastSentMessage);
-            // setLastSentMessage!(receive);
-            ws!.send(bytes);
-        }
-        
         const onSelectChange = (selected: string) => {
             switch (selected) {
                 case "mrn":
@@ -86,31 +45,30 @@ export const ChatModal = (
                         method: "GET"
                     })
                         .then(resp => resp.json())
-                        .then((resp: Agent[]) => resp.forEach(agent => {
-                            
-                            if (agent.mrn !== ownMrn) {
-                                const mrnOption = document.createElement("option");
-                                mrnOption.value = agent.mrn;
-                                mrnOption.textContent = agent.mrn;
-                                //receiverMrnSelect.appendChild(mrnOption);
-                            }
-                        }));
+                        .then((resp: Agent[]) => setAgents(resp));
+                        setMode(MessageMode.Direct);
                     break;
                 case "subject":
-                    //receiverMrnSelect.hidden = true;
-                    //receiverMrnSelect.innerHTML = "<option value=\"\">---Please select an MRN---</option>";
-                    //subjectSelect.hidden = false;
+                    setMode(MessageMode.Multicast);
                     break;
                 default:
-                    //receiverMrnSelect.hidden = true;
-                    //subjectSelect.hidden = true;
                     break;
             }
         }
+
+        const handleSend = () => {
+            if (byte && destination) {
+                sendMessage(byte, mode, destination);
+                if (textareaRef.current) {
+                    textareaRef.current.value = "";
+                  }
+            }
+        }
+
         return <div
-        className="show"
-        style={{ position: 'fixed', bottom: "0", left: "0", zIndex: 9999}}
-      >
+            className="show"
+            style={{ position: 'fixed', bottom: "0", left: "0", zIndex: 9999}}
+        >
         <Modal.Dialog>
         <Modal.Header>
           <Modal.Title>Chat</Modal.Title>
@@ -122,13 +80,12 @@ export const ChatModal = (
                 <div className="col">
                     <label htmlFor="incomingArea" className="form-label">Incoming Messages</label>
                     <div className="container h-100">
-                        <IncomingWindows></IncomingWindows>
-                        <button className="btn btn-primary my-2 item" id="receiveBtn" onClick={onReceive}>Receive Messages</button>
+                        <MessageWindow message={message}></MessageWindow>
                     </div>
                 </div>
                 <div className="col">
                     <label htmlFor="msgArea" className="form-label">Write Message Here</label>
-                    <textarea className="form-control my-2" id="msgArea" ></textarea>
+                    <textarea className="form-control my-2" id="msgArea" ref={textareaRef} onChange={(e) => setByte(encoder.encode(e.currentTarget.value))}></textarea>
                     <div>
                         <label htmlFor="msgArea" className="form-label">Select File Here</label>
                         <input type="file" id="fileInput" />
@@ -144,21 +101,25 @@ export const ChatModal = (
                         <option value="mrn">MRN</option>
                         <option value="subject">Subject</option>
                     </select>
-                    <select className="form-select" id="receiverMrn">
+                    { mode === MessageMode.Direct &&
+                    <select className="form-select" id="receiverMrn" onChange={e => setDestination(e.currentTarget.value)}>
                         <option value="">---Please select an MRN---</option>
+                        {
+                            agents.map((agent, idx) => <option key={idx} value={agent.mrn}>{agent.mrn}</option>)
+                        }
                     </select>
-                    <select className="form-select" id="subjectSelect">
-                        <option value="">---Please select a subject---</option>
-                    </select>
-                    <button className="btn btn-primary my-2" id="sendBtn">Send</button>
-                    <button className="btn btn-danger my-2" id="disconnectBtn">Disconnect</button>
+                    }
+                    {
+                        mode === MessageMode.Multicast &&
+                        <select className="form-select" id="subjectSelect" onChange={e => setDestination(e.currentTarget.value)}>
+                            <option value="">---Please select a subject---</option>
+                            {
+                                subjects.map((subject, idx) => <option key={idx} value={subject}>{subject}</option>)
+                            }
+                        </select>
+                    }
+                    <button disabled={!(byte && destination)} className="btn btn-primary my-2" id="sendBtn" onClick={handleSend}>Send</button>
                 </div>
-            </div>
-            <div className="row my-2">
-                <label htmlFor="subscriptions" className="form-label">Subscriptions</label>
-                <ListGroup>
-                    {possibleSubscriptions.map(e => <ListGroup.Item key={e}>{e}</ListGroup.Item>)}
-                </ListGroup>
             </div>
         </div>
         </Modal.Body>

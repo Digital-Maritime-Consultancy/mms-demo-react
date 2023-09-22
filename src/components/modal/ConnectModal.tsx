@@ -5,21 +5,32 @@ import { Button, Modal } from "react-bootstrap";
 export interface ConnectModalProp {
     mrnStoreUrl: string;
     createConnection: (edgeRouter: string, ownMrn: string) => boolean;
+    setMrn: (mrn: string) => void;
 }
 
 export const ConnectModal = (
     {
         mrnStoreUrl,
         createConnection,
+        setMrn
     }: ConnectModalProp
     ) =>
     {
         const [showModal, setShowModal] = useState(true);
         const [edgeRouter, setEdgeRouter] = useState("");
         
-        
         const [name, setName] = useState("");
         const mrnPrefix = "urn:mrn:mcp:device:idp1:org1:";
+
+        const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const inputValue = e.target.value;
+        
+            if (inputValue.includes(' ')) {
+                alert("Space is not allowed in your MRN");
+              e.target.value = inputValue.replace(/\s/g, '');
+            }
+            setName(e.currentTarget.value.toLowerCase()); setMrn(mrnPrefix + e.currentTarget.value.toLowerCase());
+          };
 
         const handleCloseModal = () => {
             setShowModal(false);
@@ -36,6 +47,9 @@ export const ConnectModal = (
             if (name === "") {
                 alert("You need to enter name");
                 return ;
+            } else if (name.includes(' ')) {
+                alert("Space is not allowed in your MRN");
+                return ;
             }
             const ownMrn = mrnPrefix + name;
             const rst = createConnection(edgeRouter, ownMrn);
@@ -46,11 +60,11 @@ export const ConnectModal = (
 
         return showModal ? <div
         className="modal show"
-        style={{ display: 'block', position: 'absolute', top: "50%", left: "50%", transform: "translate(-50%, -50%)"  }}
+        style={{ display: 'block', position: 'absolute', top: "50%", left: "50%", transform: "translate(-50%, -50%)", backgroundColor: "rgba(0, 0, 0, 0.7)" }}
       >
         <Modal.Dialog>
           <Modal.Header>
-            <Modal.Title>Connect to MMS Edge Router</Modal.Title>
+            <Modal.Title>Connect to MMS Network</Modal.Title>
           </Modal.Header>
   
           <Modal.Body>
@@ -63,7 +77,9 @@ export const ConnectModal = (
                 <option value="ws://20.91.195.244:8888">EU Edge Router</option>
             </select>
             <label htmlFor="nameField" className="form-label my-2">Write your name here</label>
-            <input type="text" className="form-control" id="nameField" onChange={(e) => setName(e.currentTarget.value)} />
+            <input type="text" className="form-control" id="nameField" onChange={handleInputChange} />
+            <label htmlFor="nameField" className="form-label my-2">Your MRN will be..</label>
+            <input type="text" disabled className="form-control" value={mrnPrefix + name}/>
         </div>
           </Modal.Body>
   
