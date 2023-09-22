@@ -156,7 +156,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   };
 
   const disconnect = () => {
-    if (!ws) return;
+    if (!ws || ws.readyState === WebSocket.CLOSED) return;
     const disconnectMsg = MmtpMessage.create({
       msgType: MsgType.PROTOCOL_MESSAGE,
       uuid: uuidv4(),
@@ -272,8 +272,6 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
 
   const showReceivedMessage = (msg: IApplicationMessage) => {
     if (msg.header?.subject) {
-        console.log(multicastMessages);
-        console.log([...multicastMessages, msg]);
         setMulticastMessages(prevMessages => [...prevMessages, msg]);
     } else if (msg.header?.sender) {
         setDirectMessage(msg);
@@ -327,7 +325,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
             </div>
           </div>
         </Col>
-        <Col md="auto"></Col>
+        <Col xs={9} className="d-flex justify-content-end align-items-center">{connected && ownMrn}</Col>
       </Row>
       <Row className="flex-grow-1">
         <Col xs={1} className="side-card-panel">
