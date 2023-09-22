@@ -4,6 +4,7 @@ import { Agent } from "../../model/Agent";
 import {v4 as uuidv4} from "uuid";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { MessageWindow } from "../MessageWindow";
+import { FileInput } from "../FileInput";
 
 export interface ChatModalProp {
     ownMrn: string;
@@ -27,13 +28,15 @@ export const ChatModal = (
     }: ChatModalProp
     ) =>
     {
-        const [byte, setByte] = useState<Uint8Array>();
+        const [bytes, setBytes] = useState<Uint8Array>();
         const [mode, setMode] = useState<MessageMode>(MessageMode.None);
         const [agents, setAgents] = useState<Agent[]>([]);
         const [subjects, setSubjects] = useState(["Horses", "Boats", "MCP", "Weather"]);
         const [destination, setDestination] = useState("");
         const encoder = new TextEncoder();
+        const [fileName, setFileName] = useState("");
         const textareaRef = useRef<HTMLTextAreaElement>(null);
+        let fileInputRef: any= useRef();
 
         const onSelectChange = (selected: string) => {
             switch (selected) {
@@ -57,11 +60,14 @@ export const ChatModal = (
         }
 
         const handleSend = () => {
-            if (byte && destination) {
-                sendMessage(byte, mode, destination);
+            if (bytes && destination) {
+                sendMessage(bytes, mode, destination);
                 if (textareaRef.current) {
                     textareaRef.current.value = "";
-                  }
+                }
+                if(fileInputRef && fileInputRef.current){
+                    fileInputRef.current.resetFileInput();
+                }
             }
         }
 
@@ -85,15 +91,8 @@ export const ChatModal = (
                 </div>
                 <div className="col">
                     <label htmlFor="msgArea" className="form-label">Write Message Here</label>
-                    <textarea className="form-control my-2" id="msgArea" ref={textareaRef} onChange={(e) => setByte(encoder.encode(e.currentTarget.value))}></textarea>
-                    <div>
-                        <label htmlFor="msgArea" className="form-label">Select File Here</label>
-                        <input type="file" id="fileInput" />
-                        <div className="container">
-                            <div id="file-state-loaded" className="bg-success text-white py-2 px-3 mb-3">File loaded</div>
-                            <div id="file-state-unloaded" className="bg-secondary text-white py-2 px-3">File not chosen</div>
-                        </div>
-                    </div>
+                    <textarea className="form-control my-2" id="msgArea" ref={textareaRef} onChange={(e) => setBytes(encoder.encode(e.currentTarget.value))}></textarea>
+                    <FileInput ref={fileInputRef} setBytes={setBytes} />
 
                     <label htmlFor="receiver" className="form-label">Receiver of Message</label>
                     <select className="form-select" id="receiver" onChange={(e) => onSelectChange(e.currentTarget.value)}>
@@ -118,7 +117,7 @@ export const ChatModal = (
                             }
                         </select>
                     }
-                    <button disabled={!(byte && destination)} className="btn btn-primary my-2" id="sendBtn" onClick={handleSend}>Send</button>
+                    <button disabled={!(bytes && destination)} className="btn btn-primary my-2" id="sendBtn" onClick={handleSend}>Send</button>
                 </div>
             </div>
         </div>
