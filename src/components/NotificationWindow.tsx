@@ -1,25 +1,27 @@
 import React, { useState } from "react";
 
 export interface NotificationWindowProp {
-    subject: string;
-    content: JSX.Element;
+  subject: string;
+  content: JSX.Element;
+  isMulticast: boolean;
 }
 
 export const NotificationWindow = ({
-    subject,
-    content,
+  subject,
+  content,
+  isMulticast,
 }: NotificationWindowProp) => {
   const [show, setShow] = useState(true);
 
   return (
-    <div hidden={!show}>
-      <div className="type-app-notification-size-multi-line">
-        <div className="container-content-notify">
-          <div className="container-icon-notify">
-            <div className="container-icon2-notify">
-              <div className="app-button-notify">
-                <div className="button-frame-notify">
-                  <div className="button-notify">
+    <div className="notification-list-item" hidden={!show}>
+      <div className="frame-2016">
+        <div className="container-icon-notify">
+          <div className="container-icon2-notify">
+            <div className="app-button-notify">
+              <div className="button-frame-notify">
+                <div className="button-notify">
+                  {isMulticast ? (
                     <svg
                       className="_15-pa"
                       width="24"
@@ -33,43 +35,69 @@ export const NotificationWindow = ({
                         fill="#1A1A1A"
                       />
                     </svg>
-                  </div>
+                  ) : (
+                    <svg
+                      className="_15-contacts"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M22 3H2C0.9 3 0 3.9 0 5V19C0 20.1 0.9 21 2 21H22C23.1 21 23.99 20.1 23.99 19L24 5C24 3.9 23.1 3 22 3ZM8 6C9.66 6 11 7.34 11 9C11 10.66 9.66 12 8 12C6.34 12 5 10.66 5 9C5 7.34 6.34 6 8 6ZM14 18H2V17C2 15 6 13.9 8 13.9C10 13.9 14 15 14 17V18ZM17.85 14H19.49L21 16L19.01 17.99C17.7 17.01 16.73 15.61 16.28 14C16.1 13.36 16 12.69 16 12C16 11.31 16.1 10.64 16.28 10C16.73 8.38 17.7 6.99 19.01 6.01L21 8L19.49 10H17.85C17.63 10.63 17.5 11.3 17.5 12C17.5 12.7 17.63 13.37 17.85 14Z"
+                        fill="#1A1A1A"
+                      />
+                    </svg>
+                  )}
                 </div>
               </div>
-              <div className="icon2-notify">
-                <svg
-                  className="icon3-notify"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3.33335 1.66666C2.41288 1.66666 1.66669 2.41286 1.66669 3.33333V13.3333C1.66669 14.2538 2.41288 15 3.33335 15H6.66669L10 18.3333L13.3334 15H16.6667C17.5872 15 18.3334 14.2538 18.3334 13.3333V3.33333C18.3334 2.41286 17.5872 1.66666 16.6667 1.66666H3.33335Z"
-                    fill="white"
-                  />
-                </svg>
-              </div>
+            </div>
+            <div className="icon2-notify">
+              <svg
+                className="icon3-notify"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3.33335 1.66666C2.41288 1.66666 1.66669 2.41286 1.66669 3.33333V13.3333C1.66669 14.2538 2.41288 15 3.33335 15H6.66669L10 18.3333L13.3334 15H16.6667C17.5872 15 18.3334 14.2538 18.3334 13.3333V3.33333C18.3334 2.41286 17.5872 1.66666 16.6667 1.66666H3.33335Z"
+                  fill="white"
+                />
+              </svg>
             </div>
           </div>
-          <div className="container-message-notify">
-            <div className="container-title-notify">
-              <div className="text-time-notify">{subject}</div>
-            </div>
-            <div className="container-text-notify">
-              <div className="text-message-notify">
-                {content}
+        </div>
+        <div className="frame-1824">
+          <div className="frame-1822">
+            <div className="text-time">{subject}</div>
+            <div className="text-time2">09:12:46</div>
+          </div>
+          <div className="frame-1825">
+            <div className="text-message">{content}</div>
+          </div>
+        </div>
+      </div>
+      <div className="container-actions">
+        <div className="container-ack2">
+          <div className="button-ack-bottom">
+            <div className="button-bottom">
+              <div className="content-bottom">
+                <div className="textbox-bottom">
+                  <div className="label-bottom">Answer</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="frame-2017-notify">
-          <div className="button-ack-notify">
-            <div className="button2-notify" onClick={() => setShow(false)}>
-              <div className="content-notify">
-                <div className="textbox-notify">
-                  <div className="label-notify">Dismiss</div>
+        <div className="container-ack2">
+          <div className="button-ack-bottom">
+            <div className="button-bottom" onClick={() => setShow(false)}>
+              <div className="content-bottom">
+                <div className="textbox-bottom">
+                  <div className="label-bottom">Dismiss</div>
                 </div>
               </div>
             </div>
@@ -78,6 +106,6 @@ export const NotificationWindow = ({
       </div>
     </div>
   );
-}
+};
 
 export default NotificationWindow;

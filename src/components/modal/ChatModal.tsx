@@ -83,7 +83,7 @@ export const ChatModal = ({
     >
       <Modal.Dialog>
         <Modal.Header>
-          <Modal.Title>Chat</Modal.Title>
+          <Modal.Title>Send message</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>

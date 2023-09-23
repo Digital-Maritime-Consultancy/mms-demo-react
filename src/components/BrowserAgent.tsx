@@ -33,7 +33,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   const [ownMrn, setOwnMrn] = useState("");
   const [connected, setConnected] = useState(false);
   const [directMessage, setDirectMessage] = useState<IApplicationMessage>();
-  const [multicastMessages, setMulticastMessages] = useState<IApplicationMessage[]>([]);
+  const [receivedMessages, setReceivedMessages] = useState<IApplicationMessage[]>([]);
   const [lastSentMessage, setLastSentMessage] = useState<MmtpMessage>();
   const [subjects, setSubjects] = useState([
     "Urn:mrn:mcp:service:dk-dmi:weather_on_route",
@@ -62,7 +62,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
 
   const initialize = () => {
     setConnected(false);
-        openConnModal();
+    openConnModal();
   }
   const isWebSocketNotWorking = (): boolean => {
     if (!ws || ws.readyState === WebSocket.CLOSED) {
@@ -271,11 +271,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   };
 
   const showReceivedMessage = (msg: IApplicationMessage) => {
-    if (msg.header?.subject) {
-        setMulticastMessages(prevMessages => [...prevMessages, msg]);
-    } else if (msg.header?.sender) {
-        setDirectMessage(msg);
-    }
+    setReceivedMessages(prevMessages => [...prevMessages, msg]);
   };
 
   const openSubModal = () => {
@@ -328,12 +324,12 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
         <Col xs={9} className="d-flex justify-content-end align-items-center">{connected && ownMrn}</Col>
       </Row>
       <Row className="flex-grow-1">
-        <Col xs={1} className="side-card-panel">
-          <div className="container-content">
-            <div className="container-cards">
-              <div className="tab">
-                <div className="button-frame">
-                  <div className="button">
+        <Col xs={1} className="side-card-panel-main">
+          <div className="container-content-main">
+            <div className="container-cards-main">
+              <div className="tab-main">
+                <div className="button-frame-main">
+                  <div className="button-main">
                     <svg
                       className="_15-contacts"
                       width="24"
@@ -349,14 +345,14 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
                     </svg>
                   </div>
                 </div>
-                <div className="textbox">
-                  <div className="label">Direct</div>
+                <div className="textbox-main">
+                  <div className="label-main">Direct</div>
                 </div>
               </div>
               <div className="dividers"></div>
-              <div className="tab">
+              <div className="tab-main">
                 <div className="button-frame">
-                  <div className="button">
+                  <div className="button-main">
                     <svg
                       className="_15-pa"
                       width="24"
@@ -372,14 +368,14 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
                     </svg>
                   </div>
                 </div>
-                <div className="textbox">
-                  <div className="label">Multicast</div>
+                <div className="textbox-main">
+                  <div className="label-main">Multicast</div>
                 </div>
               </div>
               <div className="dividers"></div>
-              <div className="tab">
-                <div className="button-frame">
-                  <div className="button" onClick={openSubModal}>
+              <div className="tab-main">
+                <div className="button-frame-main">
+                  <div className="button-main" onClick={openSubModal}>
                     <svg
                       className="_15-pa-list"
                       width="24"
@@ -408,14 +404,14 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
                     </svg>
                   </div>
                 </div>
-                <div className="textbox">
-                  <div className="label">Subscription</div>
+                <div className="textbox-main">
+                  <div className="label-main">Subscription</div>
                 </div>
               </div>
               <div className="dividers"></div>
-              <div className="tab">
-                <div className="button-frame">
-                  <div className="button">
+              <div className="tab-main">
+                <div className="button-frame-main">
+                  <div className="button-main">
                     <svg
                       className="_01-close"
                       width="24"
@@ -431,8 +427,8 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
                     </svg>
                   </div>
                 </div>
-                <div className="textbox">
-                  <div className="label">Disconnect</div>
+                <div className="textbox-main">
+                  <div className="label-main">Disconnect</div>
                 </div>
               </div>
             </div>
@@ -461,7 +457,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
           </div>
         </Col>
         <Col style={{ backgroundColor: "#f819fa" }} className="p-0">
-          <NotificationManager multicastMessages={multicastMessages}/>
+          <NotificationManager multicastMessages={receivedMessages} setMulticastMessages={setReceivedMessages}/>
           <SubscriptionManager
             ref={subModalRef}
             subscriptions={subjects}

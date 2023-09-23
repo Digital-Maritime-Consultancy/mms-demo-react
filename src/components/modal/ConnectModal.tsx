@@ -30,8 +30,17 @@ export const ConnectModal = forwardRef(
       setShowModal(false);
     };
 
+    const initialize = () => {
+        setEdgeRouter("");
+        setName("");
+    }
+    const handleOpenModal = () => {
+        initialize();
+        setShowModal(true);
+    }
+
     useImperativeHandle(ref, () => ({
-      openModal: () => setShowModal(true),
+      openModal: () => handleOpenModal(),
     }));
 
     const connect = () => {
@@ -111,9 +120,6 @@ export const ConnectModal = forwardRef(
           </Modal.Body>
 
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Close
-            </Button>
             <Button variant="primary" onClick={connect}>
               Connect
             </Button>

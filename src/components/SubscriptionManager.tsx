@@ -57,7 +57,7 @@ export const SubscriptionManager = forwardRef(
                           <path
                             d="M19 6.91L17.59 5.5L12 11.09L6.41 5.5L5 6.91L10.59 12.5L5 18.09L6.41 19.5L12 13.91L17.59 19.5L19 18.09L13.41 12.5L19 6.91Z"
                             fill="black"
-                            fill-opacity="0.55"
+                            fillOpacity="0.55"
                           />
                         </svg>
                       </div>
@@ -66,20 +66,6 @@ export const SubscriptionManager = forwardRef(
                 </div>
                 <div className="border-bottom"></div>
                 <div className="card-label">
-                  <svg
-                    className="icon2"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M16.59 8.59009L18 10.0001L12 16.0001L6 10.0001L7.41 8.59009L12 13.1701L16.59 8.59009Z"
-                      fill="black"
-                      fill-opacity="0.55"
-                    />
-                  </svg>
 
                   <svg
                     className="_15-pa-list"
