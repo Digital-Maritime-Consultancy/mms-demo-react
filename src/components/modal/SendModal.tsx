@@ -10,30 +10,25 @@ import {
 import { Agent } from "../../model/Agent";
 import { v4 as uuidv4 } from "uuid";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
-import { MessageWindow } from "../MessageWindow";
 import { FileInput } from "../FileInput";
+import { MessageMode } from "../BrowserAgent";
 
-export interface ChatModalProp {
+export interface SendModalProp {
   ownMrn: string;
+  mode: MessageMode;
   mrnStoreUrl: string;
   subjects: string[];
   message?: IApplicationMessage;
   sendMessage: (msg: Uint8Array, mode: MessageMode, endPoint: string) => void;
 }
 
-export enum MessageMode {
-  None = 0,
-  Direct,
-  Multicast,
-}
-
-export const ChatModal = ({
+export const SendModal = ({
   ownMrn,
   mrnStoreUrl,
   message,
   subjects,
   sendMessage,
-}: ChatModalProp) => {
+}: SendModalProp) => {
   const [bytes, setBytes] = useState<Uint8Array>();
   const [mode, setMode] = useState<MessageMode>(MessageMode.None);
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -89,14 +84,6 @@ export const ChatModal = ({
         <Modal.Body>
           <div className="container" id="msgContainer">
             <div className="row">
-              <div className="col">
-                <label htmlFor="incomingArea" className="form-label">
-                  Incoming Messages
-                </label>
-                <div className="container h-100">
-                  <MessageWindow message={message}></MessageWindow>
-                </div>
-              </div>
               <div className="col">
                 <label htmlFor="msgArea" className="form-label">
                   Write Message Here

@@ -13,9 +13,6 @@ export const NotificationWindow = forwardRef(
 
   const deleteOne = () => 
     props.setMessages(prevMessages => prevMessages.filter((msg) => msg !== props.message));
-
-
-  const isMulticast= !(props.message.header?.recipients)
   
   return (
     <div className="notification-list-item" hidden={!show}>
@@ -25,7 +22,7 @@ export const NotificationWindow = forwardRef(
             <div className="app-button-notify">
               <div className="button-frame-notify">
                 <div className="button-notify">
-                  {isMulticast ? (
+                  {!(props.message.header?.recipients) ? (
                     <svg
                       className="_15-pa"
                       width="24"
@@ -80,7 +77,7 @@ export const NotificationWindow = forwardRef(
       ? props.message.header?.subject!
       : props.message.header?.recipients?.recipients![0]!}</div>
             <div className="text-time2">
-              {isMulticast ? "multicast" : "direct"}
+              {!(props.message.header?.recipients) ? "multicast" : "direct"}
             </div>
           </div>
           <div className="frame-1825">
@@ -89,13 +86,13 @@ export const NotificationWindow = forwardRef(
         </div>
       </div>
       <div className="container-actions">
-        {isMulticast && (
+        {(props.message.header?.recipients) && (
           <div className="container-ack2">
             <div className="button-ack-bottom">
               <div className="button-bottom">
                 <div className="content-bottom">
                   <div className="textbox-bottom">
-                    <div className="label-bottom">Answer</div>
+                    <div className="label-bottom">Reply</div>
                   </div>
                 </div>
               </div>

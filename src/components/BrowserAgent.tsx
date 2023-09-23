@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Map } from "./map/Map";
 import { Container, Row, Col } from "react-bootstrap";
 import { ConnectModal } from "./modal/ConnectModal";
-import { ChatModal, MessageMode } from "./modal/ChatModal";
+import { SendModal } from "./modal/SendModal";
 import NotificationManager from "./NotificationManager";
 import {
   ApplicationMessage,
@@ -26,6 +26,12 @@ import { SubscriptionManager } from "./SubscriptionManager";
 
 export interface BrowserAgentProp {
   positions: number[][];
+}
+
+export enum MessageMode {
+    None = 0,
+    Direct,
+    Multicast,
 }
 
 export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
@@ -467,13 +473,14 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
             subscribeMessage={subscribeMessage}
             unsubscribeMessage={unsubscribeMessage}
           />
-          <ChatModal
+          <SendModal
+            mode={MessageMode.Direct}
             mrnStoreUrl={mrnStoreUrl}
             ownMrn={ownMrn}
             message={directMessage}
             sendMessage={sendMessage}
             subjects={subjects}
-          ></ChatModal>
+          ></SendModal>
           <Map positions={positions}></Map>
         </Col>
       </Row>
