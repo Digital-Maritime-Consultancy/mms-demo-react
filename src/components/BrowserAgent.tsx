@@ -61,6 +61,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   }, [connected]);
 
   const initialize = () => {
+    setReceivedMessages([]);
     setConnected(false);
     openConnModal();
   }
@@ -459,7 +460,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
           </div>
         </Col>
         <Col style={{ backgroundColor: "#f819fa" }} className="p-0">
-          <NotificationManager multicastMessages={receivedMessages} setMulticastMessages={setReceivedMessages}/>
+          <NotificationManager messages={receivedMessages} setMessages={setReceivedMessages}/>
           <SubscriptionManager
             ref={subModalRef}
             subscriptions={subjects}

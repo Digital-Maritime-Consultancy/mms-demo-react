@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { Button, Alert, Container } from "react-bootstrap";
 import { IApplicationMessage } from "../generated/mmtp";
 import { payloadToHtmlElem } from "../util/PayloadHandler";
@@ -7,19 +7,19 @@ import NotificationWindow from "./NotificationWindow";
 import "./NotificationManager.css";
 
 export interface NotificationManagerProp {
-  multicastMessages: IApplicationMessage[];
-  setMulticastMessages: (msgs: IApplicationMessage[]) => void;
+  messages: IApplicationMessage[];
+  setMessages: Dispatch<SetStateAction<IApplicationMessage[]>>;
 }
 
 export const NotificationManager = ({
-  multicastMessages,
-  setMulticastMessages,
+  messages,
+  setMessages,
 }: NotificationManagerProp) => {
   var enc = new TextEncoder();
 
   return (
     <>
-      {multicastMessages.length > 0 && (
+      {messages.length > 0 && (
         <div
           style={{
             position: "fixed",
@@ -40,7 +40,7 @@ export const NotificationManager = ({
                 <div className="button-ack-title">
                   <div
                     className="button-title"
-                    onClick={() => setMulticastMessages([])}
+                    onClick={() => setMessages([])}
                   >
                     <div className="content-title">
                       <div className="textbox-title">
@@ -52,16 +52,11 @@ export const NotificationManager = ({
               </div>
             </div>
             <div className="container-wrapper">
-              {multicastMessages.map((m, idx) => (
+              {messages.map((m, idx) => (
                 <NotificationWindow
                   key={idx}
-                  subject={
-                    m.header?.subject !== undefined
-                      ? m.header?.subject!
-                      : m.header?.recipients?.recipients![0]!
-                  }
-                  content={payloadToRC(m.body!)!}
-                  isMulticast={m.header?.subject !== undefined}
+                  message={m}
+                  setMessages={setMessages}
                 ></NotificationWindow>
               ))}
             </div>

@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import React, { Dispatch, forwardRef, SetStateAction, useImperativeHandle, useState } from "react";
+import { IApplicationMessage } from "../generated/mmtp";
+import { payloadToRC } from "../util/PayloadToRC";
 
 export interface NotificationWindowProp {
-  subject: string;
-  content: JSX.Element;
-  isMulticast: boolean;
+    message: IApplicationMessage;
+    setMessages: Dispatch<SetStateAction<IApplicationMessage[]>>;
 }
 
-export const NotificationWindow = ({
-  subject,
-  content,
-  isMulticast,
-}: NotificationWindowProp) => {
+export const NotificationWindow = forwardRef(
+    (props: NotificationWindowProp, ref) => {
   const [show, setShow] = useState(true);
 
+  const deleteOne = () => 
+    props.setMessages(prevMessages => prevMessages.filter((msg) => msg !== props.message));
+
+
+  const isMulticast= !(props.message.header?.recipients)
+  
   return (
     <div className="notification-list-item" hidden={!show}>
       <div className="frame-2016">
@@ -72,29 +76,35 @@ export const NotificationWindow = ({
         </div>
         <div className="frame-1824">
           <div className="frame-1822">
-            <div className="text-time">{subject}</div>
-            <div className="text-time2">09:12:46</div>
+            <div className="text-time">{!props.message.header?.recipients
+      ? props.message.header?.subject!
+      : props.message.header?.recipients?.recipients![0]!}</div>
+            <div className="text-time2">
+              {isMulticast ? "multicast" : "direct"}
+            </div>
           </div>
           <div className="frame-1825">
-            <div className="text-message">{content}</div>
+            <div className="text-message">{payloadToRC(props.message.body!)!}</div>
           </div>
         </div>
       </div>
       <div className="container-actions">
-        <div className="container-ack2">
-          <div className="button-ack-bottom">
-            <div className="button-bottom">
-              <div className="content-bottom">
-                <div className="textbox-bottom">
-                  <div className="label-bottom">Answer</div>
+        {isMulticast && (
+          <div className="container-ack2">
+            <div className="button-ack-bottom">
+              <div className="button-bottom">
+                <div className="content-bottom">
+                  <div className="textbox-bottom">
+                    <div className="label-bottom">Answer</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="container-ack2">
           <div className="button-ack-bottom">
-            <div className="button-bottom" onClick={() => setShow(false)}>
+            <div className="button-bottom" onClick={() => deleteOne()}>
               <div className="content-bottom">
                 <div className="textbox-bottom">
                   <div className="label-bottom">Dismiss</div>
@@ -106,6 +116,6 @@ export const NotificationWindow = ({
       </div>
     </div>
   );
-};
+});
 
 export default NotificationWindow;
