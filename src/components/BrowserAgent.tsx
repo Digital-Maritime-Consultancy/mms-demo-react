@@ -271,7 +271,9 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   };
 
   const showReceivedMessage = (msg: IApplicationMessage) => {
-    setReceivedMessages(prevMessages => [...prevMessages, msg]);
+    if (!receivedMessages.includes(msg)){
+        setReceivedMessages(prevMessages => [...prevMessages, msg]);
+    }
   };
 
   const openSubModal = () => {
