@@ -1,11 +1,8 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-export interface InfoModalProp {
-}
-
 export const InfoModal = forwardRef(
-  ({ }: InfoModalProp, ref) => {
+  (props, ref) => {
     const [showModal, setShowModal] = useState(false);
 
     const handleCloseModal = () => {

@@ -1,18 +1,7 @@
-import { Button, Container, ListGroup, Modal, Row } from "react-bootstrap";
-import {
-  IApplicationMessage,
-  MmtpMessage,
-  MsgType,
-  ProtocolMessage,
-  ProtocolMessageType,
-  Receive,
-} from "../../generated/mmtp";
+import { Button, Container, Row } from "react-bootstrap";
 import { Agent } from "../../model/Agent";
-import { v4 as uuidv4 } from "uuid";
 import {
-  Dispatch,
   forwardRef,
-  SetStateAction,
   useEffect,
   useImperativeHandle,
   useRef,
