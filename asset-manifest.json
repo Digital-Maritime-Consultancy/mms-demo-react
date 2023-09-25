@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/Digital-Maritime-Consultancy/mms-demo.dmc.international/static/css/main.eb2ee5ac.css",
-    "main.js": "/Digital-Maritime-Consultancy/mms-demo.dmc.international/static/js/main.0bfd71d3.js",
-    "static/js/787.cd721844.chunk.js": "/Digital-Maritime-Consultancy/mms-demo.dmc.international/static/js/787.cd721844.chunk.js",
-    "index.html": "/Digital-Maritime-Consultancy/mms-demo.dmc.international/index.html",
-    "main.eb2ee5ac.css.map": "/Digital-Maritime-Consultancy/mms-demo.dmc.international/static/css/main.eb2ee5ac.css.map",
-    "main.0bfd71d3.js.map": "/Digital-Maritime-Consultancy/mms-demo.dmc.international/static/js/main.0bfd71d3.js.map",
-    "787.cd721844.chunk.js.map": "/Digital-Maritime-Consultancy/mms-demo.dmc.international/static/js/787.cd721844.chunk.js.map"
+    "main.css": "/Digital-Maritime-Consultancy/mms-demo-react/static/css/main.eb2ee5ac.css",
+    "main.js": "/Digital-Maritime-Consultancy/mms-demo-react/static/js/main.fbf2d07c.js",
+    "static/js/787.cd721844.chunk.js": "/Digital-Maritime-Consultancy/mms-demo-react/static/js/787.cd721844.chunk.js",
+    "index.html": "/Digital-Maritime-Consultancy/mms-demo-react/index.html",
+    "main.eb2ee5ac.css.map": "/Digital-Maritime-Consultancy/mms-demo-react/static/css/main.eb2ee5ac.css.map",
+    "main.fbf2d07c.js.map": "/Digital-Maritime-Consultancy/mms-demo-react/static/js/main.fbf2d07c.js.map",
+    "787.cd721844.chunk.js.map": "/Digital-Maritime-Consultancy/mms-demo-react/static/js/787.cd721844.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.eb2ee5ac.css",
-    "static/js/main.0bfd71d3.js"
+    "static/js/main.fbf2d07c.js"
   ]
 }
