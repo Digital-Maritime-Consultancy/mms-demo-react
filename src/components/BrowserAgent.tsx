@@ -23,22 +23,25 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { disconnect } from "process";
 import { SubscriptionManager } from "./SubscriptionManager";
+import { InfoModal } from "./modal/InfoModal";
 
 export interface BrowserAgentProp {
   positions: number[][];
 }
 
 export enum MessageMode {
-    None = 0,
-    Direct,
-    Multicast,
+  None = 0,
+  Direct,
+  Multicast,
 }
 
 export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   const mrnStoreUrl = "http://20.91.195.244";
   const [ownMrn, setOwnMrn] = useState("");
   const [connected, setConnected] = useState(false);
-  const [receivedMessages, setReceivedMessages] = useState<IApplicationMessage[]>([]);
+  const [receivedMessages, setReceivedMessages] = useState<
+    IApplicationMessage[]
+  >([]);
   const [lastSentMessage, setLastSentMessage] = useState<MmtpMessage>();
   const [subjects, setSubjects] = useState([
     "Urn:mrn:mcp:service:dk-dmi:weather_on_route",
@@ -51,6 +54,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   let subModalRef: any = useRef();
   let connModalRef: any = useRef();
   let sendModalRef: any = useRef();
+  let infoModalRef: any = useRef();
   let handleId: NodeJS.Timer;
 
   useEffect(() => {
@@ -71,14 +75,15 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
     setConnected(false);
     openConnModal();
     setOwnMrn("");
-  }
+  };
+
   const isWebSocketNotWorking = (): boolean => {
     if (!ws || ws.readyState === WebSocket.CLOSED) {
-        initialize();
-        return true;
+      initialize();
+      return true;
     }
     return false;
-  }
+  };
 
   const checkReceivedMsg = () => {
     if (isWebSocketNotWorking()) return;
@@ -277,8 +282,8 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   };
 
   const showReceivedMessage = (msg: IApplicationMessage) => {
-    if (!receivedMessages.includes(msg)){
-        setReceivedMessages(prevMessages => [...prevMessages, msg]);
+    if (!receivedMessages.includes(msg)) {
+      setReceivedMessages((prevMessages) => [...prevMessages, msg]);
     }
   };
 
@@ -290,14 +295,24 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
 
   const openConnModal = () => {
     if (connModalRef && connModalRef.current) {
-        connModalRef.current.openModal();
+      connModalRef.current.openModal();
     }
   };
 
-  const openSendModal = (mode: MessageMode) => {
-    if (sendModalRef && sendModalRef.current) {
-        sendModalRef.current.openModal(mode);
+  const openInfoModal = () => {
+    if (infoModalRef && infoModalRef.current) {
+        infoModalRef.current.openModal();
     }
+  };
+
+  const openSendModal = (mode: MessageMode, mrn?: string) => {
+    if (sendModalRef && sendModalRef.current) {
+      sendModalRef.current.openModal(mode, mrn);
+    }
+  };
+
+  const triggerReply = (mrn: string) => {
+    openSendModal(MessageMode.Direct, mrn);
   };
 
   return (
@@ -311,6 +326,8 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
         setMrn={setOwnMrn}
         ref={connModalRef}
       ></ConnectModal>
+
+      <InfoModal ref={infoModalRef}></InfoModal>
 
       <Row className="topbar">
         <Col xs={3}>
@@ -335,15 +352,20 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
             </div>
           </div>
         </Col>
-        <Col xs={9} className="d-flex justify-content-end align-items-center">{connected && ownMrn}</Col>
+        <Col xs={9} className="d-flex justify-content-end align-items-center">
+          {connected && ownMrn}
+        </Col>
       </Row>
       <Row className="flex-grow-1">
         <Col xs={1} className="side-card-panel-main">
           <div className="container-content-main">
             <div className="container-cards-main">
               <div className="tab-main">
-                <div className="button-frame-main">
-                  <div className="button-main" onClick={() => openSendModal(MessageMode.Direct)}>
+                <div
+                  className="button-frame-main"
+                  onClick={() => openSendModal(MessageMode.Direct)}
+                >
+                  <div className="button-main">
                     <svg
                       className="_15-contacts"
                       width="24"
@@ -365,8 +387,11 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
               </div>
               <div className="dividers"></div>
               <div className="tab-main">
-                <div className="button-frame">
-                  <div className="button-main" onClick={() => openSendModal(MessageMode.Multicast)}>
+                <div
+                  className="button-frame"
+                  onClick={() => openSendModal(MessageMode.Multicast)}
+                >
+                  <div className="button-main">
                     <svg
                       className="_15-pa"
                       width="24"
@@ -388,8 +413,8 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
               </div>
               <div className="dividers"></div>
               <div className="tab-main">
-                <div className="button-frame-main">
-                  <div className="button-main" onClick={openSubModal}>
+                <div className="button-frame-main" onClick={openSubModal}>
+                  <div className="button-main">
                     <svg
                       className="_15-pa-list"
                       width="24"
@@ -424,8 +449,8 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
               </div>
               <div className="dividers"></div>
               <div className="tab-main">
-                <div className="button-frame-main">
-                  <div className="button-main" onClick={() => disconnect()}>
+                <div className="button-frame-main" onClick={() => disconnect()}>
+                  <div className="button-main">
                     <svg
                       className="_01-close"
                       width="24"
@@ -447,21 +472,20 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
               </div>
             </div>
             <div className="panel-controls">
-              <div className="button-expand">
-                <div className="button-frame">
-                  <div className="button3">
+              <div className="tab-main">
+                <div className="button-frame-main" onClick={() => openInfoModal()}>
+                  <div className="button-main">
                     <svg
-                      className="leading-icon6"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
+                      className="icon"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M8.58984 7.41L9.99984 6L15.9998 12L9.99984 18L8.58984 16.59L13.1698 12L8.58984 7.41Z"
-                        fill="black"
-                        fillOpacity="0.55"
+                        d="M9 5H11V7H9V5ZM9 9H11V15H9V9ZM10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM10 18C5.59 18 2 14.41 2 10C2 5.59 5.59 2 10 2C14.41 2 18 5.59 18 10C18 14.41 14.41 18 10 18Z"
+                        fill="#1A1A1A"
                       />
                     </svg>
                   </div>
@@ -471,7 +495,11 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
           </div>
         </Col>
         <Col style={{ backgroundColor: "#f819fa" }} className="p-0">
-          <NotificationManager messages={receivedMessages} setMessages={setReceivedMessages}/>
+          <NotificationManager
+            messages={receivedMessages}
+            setMessages={setReceivedMessages}
+            reply={(mrn: string) => triggerReply(mrn)}
+          />
           <SubscriptionManager
             ref={subModalRef}
             subscriptions={subjects}
@@ -479,7 +507,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
             unsubscribeMessage={unsubscribeMessage}
           />
           <SendModal
-          ref={sendModalRef}
+            ref={sendModalRef}
             mode={MessageMode.Direct}
             mrnStoreUrl={mrnStoreUrl}
             ownMrn={ownMrn}

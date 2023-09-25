@@ -9,7 +9,15 @@ import {
 } from "../../generated/mmtp";
 import { Agent } from "../../model/Agent";
 import { v4 as uuidv4 } from "uuid";
-import { Dispatch, forwardRef, SetStateAction, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  Dispatch,
+  forwardRef,
+  SetStateAction,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { FileInput } from "../FileInput";
 import { MessageMode } from "../BrowserAgent";
 import "./SendModal.css";
@@ -22,9 +30,8 @@ export interface SendModalProp {
   sendMessage: (msg: Uint8Array, mode: MessageMode, endPoint: string) => void;
 }
 
-export const SendModal = forwardRef(
-  (props: SendModalProp, ref) => {
-    const [show, setShow] = useState(false);
+export const SendModal = forwardRef((props: SendModalProp, ref) => {
+  const [show, setShow] = useState(false);
   const [bytes, setBytes] = useState<Uint8Array>();
   const [_mode, setMode] = useState<MessageMode>(props.mode);
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -33,18 +40,29 @@ export const SendModal = forwardRef(
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   let fileInputRef: any = useRef();
 
-  useEffect( () => {
+  useEffect(() => {
     fetchMrns();
   }, [props.mode]);
+
+  useEffect(() => {
+  }, [destination]);
 
   const handleShow = (mode: MessageMode) => {
     fetchMrns();
     setMode(mode);
     setShow(true);
+  };
+
+  const close = () => {
+    setShow(false);
+    setBytes(new Uint8Array());
   }
 
   useImperativeHandle(ref, () => ({
-    openModal: (mode: MessageMode) => handleShow(mode),
+    openModal: (mode: MessageMode, recipientMrn?: string) => {
+      handleShow(mode);
+      setDestination(recipientMrn!);
+    },
   }));
 
   const fetchMrns = () => {
@@ -56,7 +74,7 @@ export const SendModal = forwardRef(
       .then((resp: Agent[]) =>
         setAgents(resp.filter((e) => e.mrn !== props.ownMrn))
       );
-  }
+  };
 
   const onSelectChange = (selected: string) => {
     switch (selected) {
@@ -84,21 +102,22 @@ export const SendModal = forwardRef(
     }
   };
 
-  return <>
-    {show &&
-    <div
-      className="show"
-      style={{ position: "fixed", bottom: "0", left: "48px", zIndex: 9999 }}
-    >
-      <div className="modal-window-send">
-        <Container fluid>
-          <Row className="top-area-send align-middle">
-            <div className="border-bottom-send" />
-            <span className="title-send align-middle">Send message</span>
-          </Row>
-          <Row>
-            <Row>
-            <label htmlFor="receiver" className="form-label">
+  return (
+    <>
+      {show && (
+        <div
+          className="show"
+          style={{ position: "fixed", bottom: "0", left: "48px", zIndex: 9999 }}
+        >
+          <div className="modal-window-send">
+            <Container fluid>
+              <Row className="top-area-send align-middle">
+                <div className="border-bottom-send" />
+                <span className="title-send align-middle">Send message</span>
+              </Row>
+              <Row>
+                <Row>
+                  <label htmlFor="receiver" className="form-label">
                     Receiver of Message
                   </label>
                   {_mode === MessageMode.None && (
@@ -118,9 +137,12 @@ export const SendModal = forwardRef(
                     <select
                       className="form-select"
                       id="receiverMrn"
+                      value={destination}
                       onChange={(e) => setDestination(e.currentTarget.value)}
                     >
-                      <option value="">---Please select an MRN---</option>
+                      <option value={""}>
+                        ---Please select an MRN---
+                      </option>
                       {agents.map((agent, idx) => (
                         <option key={idx} value={agent.mrn}>
                           {agent.mrn}
@@ -142,9 +164,9 @@ export const SendModal = forwardRef(
                       ))}
                     </select>
                   )}
-            </Row>
-            <Row>
-            <label htmlFor="msgArea" className="form-label">
+                </Row>
+                <Row>
+                  <label htmlFor="msgArea" className="form-label">
                     Write Message Here
                   </label>
                   <textarea
@@ -156,15 +178,28 @@ export const SendModal = forwardRef(
                     }
                   ></textarea>
                   <FileInput ref={fileInputRef} setBytes={setBytes} />
-            </Row>
-            <Row className="">
-              <Button disabled={!(bytes && destination)}
-                    className="me-2 button4-send my-2" onClick={handleSend}>Send</Button>
-              <Button className="button4-send my-2" onClick={() => setShow(false)}>Close</Button>
-            </Row>
-          </Row>
-        </Container>
-      </div>
-    </div>}
-  </>;
+                </Row>
+                <Row className="">
+                  <Button
+                    disabled={!(bytes && destination && bytes.length)}
+                    className="me-2 button4-send my-2"
+                    onClick={handleSend}
+                  >
+                    Send
+                  </Button>
+                  <Button
+                  variant="secondary"
+                    className="button4-send my-2"
+                    onClick={() => close()}
+                  >
+                    Close
+                  </Button>
+                </Row>
+              </Row>
+            </Container>
+          </div>
+        </div>
+      )}
+    </>
+  );
 });

@@ -9,11 +9,13 @@ import "./NotificationManager.css";
 export interface NotificationManagerProp {
   messages: IApplicationMessage[];
   setMessages: Dispatch<SetStateAction<IApplicationMessage[]>>;
+  reply: (mrn: string) => void;
 }
 
 export const NotificationManager = ({
   messages,
   setMessages,
+  reply,
 }: NotificationManagerProp) => {
   var enc = new TextEncoder();
 
@@ -57,6 +59,7 @@ export const NotificationManager = ({
                   key={idx}
                   message={m}
                   setMessages={setMessages}
+                  reply={reply}
                 ></NotificationWindow>
               ))}
             </div>

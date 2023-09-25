@@ -5,6 +5,7 @@ import { payloadToRC } from "../util/PayloadToRC";
 export interface NotificationWindowProp {
     message: IApplicationMessage;
     setMessages: Dispatch<SetStateAction<IApplicationMessage[]>>;
+    reply: (mrn: string) => void;
 }
 
 export const NotificationWindow = forwardRef(
@@ -89,7 +90,7 @@ export const NotificationWindow = forwardRef(
         {(props.message.header?.recipients) && (
           <div className="container-ack2">
             <div className="button-ack-bottom">
-              <div className="button-bottom">
+              <div className="button-bottom" onClick={() => props.reply(props.message.header?.sender!)}>
                 <div className="content-bottom">
                   <div className="textbox-bottom">
                     <div className="label-bottom">Reply</div>
