@@ -1,4 +1,4 @@
-import { Button, ListGroup, Modal } from "react-bootstrap";
+import { Button, Container, ListGroup, Modal, Row } from "react-bootstrap";
 import {
   IApplicationMessage,
   MmtpMessage,
@@ -9,46 +9,58 @@ import {
 } from "../../generated/mmtp";
 import { Agent } from "../../model/Agent";
 import { v4 as uuidv4 } from "uuid";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dispatch, forwardRef, SetStateAction, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { FileInput } from "../FileInput";
 import { MessageMode } from "../BrowserAgent";
+import "./SendModal.css";
 
 export interface SendModalProp {
   ownMrn: string;
   mode: MessageMode;
   mrnStoreUrl: string;
   subjects: string[];
-  message?: IApplicationMessage;
   sendMessage: (msg: Uint8Array, mode: MessageMode, endPoint: string) => void;
 }
 
-export const SendModal = ({
-  ownMrn,
-  mrnStoreUrl,
-  message,
-  subjects,
-  sendMessage,
-}: SendModalProp) => {
+export const SendModal = forwardRef(
+  (props: SendModalProp, ref) => {
+    const [show, setShow] = useState(false);
   const [bytes, setBytes] = useState<Uint8Array>();
-  const [mode, setMode] = useState<MessageMode>(MessageMode.None);
+  const [_mode, setMode] = useState<MessageMode>(props.mode);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [destination, setDestination] = useState("");
   const encoder = new TextEncoder();
-  const [fileName, setFileName] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   let fileInputRef: any = useRef();
+
+  useEffect( () => {
+    fetchMrns();
+  }, [props.mode]);
+
+  const handleShow = (mode: MessageMode) => {
+    fetchMrns();
+    setMode(mode);
+    setShow(true);
+  }
+
+  useImperativeHandle(ref, () => ({
+    openModal: (mode: MessageMode) => handleShow(mode),
+  }));
+
+  const fetchMrns = () => {
+    fetch(props.mrnStoreUrl + "/mrns", {
+      mode: "cors",
+      method: "GET",
+    })
+      .then((resp) => resp.json())
+      .then((resp: Agent[]) =>
+        setAgents(resp.filter((e) => e.mrn !== props.ownMrn))
+      );
+  }
 
   const onSelectChange = (selected: string) => {
     switch (selected) {
       case "mrn":
-        //subjectSelect.hidden = true;
-        //receiverMrnSelect.hidden = false;
-        fetch(mrnStoreUrl + "/mrns", {
-          mode: "cors",
-          method: "GET",
-        })
-          .then((resp) => resp.json())
-          .then((resp: Agent[]) => setAgents(resp.filter(e => e.mrn!==ownMrn)));
         setMode(MessageMode.Direct);
         break;
       case "subject":
@@ -61,105 +73,98 @@ export const SendModal = ({
 
   const handleSend = () => {
     if (bytes && destination) {
-      sendMessage(bytes, mode, destination);
+      props.sendMessage(bytes, _mode, destination);
       if (textareaRef.current) {
         textareaRef.current.value = "";
       }
       if (fileInputRef && fileInputRef.current) {
         fileInputRef.current.resetFileInput();
       }
+      setBytes(undefined);
     }
   };
 
-  return (
+  return <>
+    {show &&
     <div
       className="show"
-      style={{ position: "fixed", bottom: "0", left: "0", zIndex: 9999 }}
+      style={{ position: "fixed", bottom: "0", left: "48px", zIndex: 9999 }}
     >
-      <Modal.Dialog>
-        <Modal.Header>
-          <Modal.Title>Send message</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          <div className="container" id="msgContainer">
-            <div className="row">
-              <div className="col">
-                <label htmlFor="msgArea" className="form-label">
-                  Write Message Here
-                </label>
-                <textarea
-                  className="form-control my-2"
-                  id="msgArea"
-                  ref={textareaRef}
-                  onChange={(e) =>
-                    setBytes(encoder.encode(e.currentTarget.value))
-                  }
-                ></textarea>
-                <FileInput ref={fileInputRef} setBytes={setBytes} />
-
-                <label htmlFor="receiver" className="form-label">
-                  Receiver of Message
-                </label>
-                <select
-                  className="form-select"
-                  id="receiver"
-                  onChange={(e) => onSelectChange(e.currentTarget.value)}
-                >
-                  <option value="">---Please choose a receiver type---</option>
-                  <option value="mrn">MRN</option>
-                  <option value="subject">Subject</option>
-                </select>
-                {mode === MessageMode.Direct && (
-                  <select
-                    className="form-select"
-                    id="receiverMrn"
-                    onChange={(e) => setDestination(e.currentTarget.value)}
-                  >
-                    <option value="">---Please select an MRN---</option>
-                    {agents.map((agent, idx) => (
-                      <option key={idx} value={agent.mrn}>
-                        {agent.mrn}
+      <div className="modal-window-send">
+        <Container fluid>
+          <Row className="top-area-send align-middle">
+            <div className="border-bottom-send" />
+            <span className="title-send align-middle">Send message</span>
+          </Row>
+          <Row>
+            <Row>
+            <label htmlFor="receiver" className="form-label">
+                    Receiver of Message
+                  </label>
+                  {_mode === MessageMode.None && (
+                    <select
+                      className="form-select"
+                      id="receiver"
+                      onChange={(e) => onSelectChange(e.currentTarget.value)}
+                    >
+                      <option value="">
+                        ---Please choose a receiver type---
                       </option>
-                    ))}
-                  </select>
-                )}
-                {mode === MessageMode.Multicast && (
-                  <select
-                    className="form-select"
-                    id="subjectSelect"
-                    onChange={(e) => setDestination(e.currentTarget.value)}
-                  >
-                    <option value="">---Please select a subject---</option>
-                    {subjects.map((subject, idx) => (
-                      <option key={idx} value={subject}>
-                        {subject}
-                      </option>
-                    ))}
-                  </select>
-                )}
-                <button
-                  disabled={!(bytes && destination)}
-                  className="btn btn-primary my-2"
-                  id="sendBtn"
-                  onClick={handleSend}
-                >
-                  Send
-                </button>
-              </div>
-            </div>
-          </div>
-        </Modal.Body>
-
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => {}}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={() => {}}>
-            Connect
-          </Button>
-        </Modal.Footer>
-      </Modal.Dialog>
-    </div>
-  );
-};
+                      <option value="mrn">MRN</option>
+                      <option value="subject">Subject</option>
+                    </select>
+                  )}
+                  {_mode === MessageMode.Direct && (
+                    <select
+                      className="form-select"
+                      id="receiverMrn"
+                      onChange={(e) => setDestination(e.currentTarget.value)}
+                    >
+                      <option value="">---Please select an MRN---</option>
+                      {agents.map((agent, idx) => (
+                        <option key={idx} value={agent.mrn}>
+                          {agent.mrn}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  {_mode === MessageMode.Multicast && (
+                    <select
+                      className="form-select"
+                      id="subjectSelect"
+                      onChange={(e) => setDestination(e.currentTarget.value)}
+                    >
+                      <option value="">---Please select a subject---</option>
+                      {props.subjects.map((subject, idx) => (
+                        <option key={idx} value={subject}>
+                          {subject}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+            </Row>
+            <Row>
+            <label htmlFor="msgArea" className="form-label">
+                    Write Message Here
+                  </label>
+                  <textarea
+                    className="form-control my-2"
+                    id="msgArea"
+                    ref={textareaRef}
+                    onChange={(e) =>
+                      setBytes(encoder.encode(e.currentTarget.value))
+                    }
+                  ></textarea>
+                  <FileInput ref={fileInputRef} setBytes={setBytes} />
+            </Row>
+            <Row className="">
+              <Button disabled={!(bytes && destination)}
+                    className="me-2 button4-send my-2" onClick={handleSend}>Send</Button>
+              <Button className="button4-send my-2" onClick={() => setShow(false)}>Close</Button>
+            </Row>
+          </Row>
+        </Container>
+      </div>
+    </div>}
+  </>;
+});

@@ -1,0 +1,225 @@
+.modal-window-send,
+.modal-window-send * {
+  box-sizing: border-box;
+}
+.modal-window-send {
+  background: var(--container-background-color, #f7f7f7);
+  border-radius: 12px;
+  border-style: solid;
+  border-color: var(--border-outline-color, rgba(0, 0, 0, 0.08));
+  border-width: 1px;
+  padding: 4px;
+  width: 386px;
+  position: relative;
+  box-shadow: var(
+    --shadow-overlay-box-shadow,
+    0px 8px 32px 0px rgba(0, 0, 0, 0.4)
+  );
+  overflow: hidden;
+}
+.top-area-send {
+  height: 48px;
+}
+.border-bottom-send {
+  background: var(--border-divider-color, rgba(0, 0, 0, 0.08));
+  border-radius: 1px;
+  height: 1px;
+  position: absolute;
+  right: 4px;
+  left: 4px;
+  bottom: 0px;
+}
+.container-title-send {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
+  position: absolute;
+  left: 16px;
+  top: calc(50% - 12px);
+}
+.title-send {
+  color: var(--element-neutral-color, rgba(0, 0, 0, 0.59));
+  text-align: left;
+  font: var(--ui-overline, 600 12px/24px "Noto Sans", sans-serif);
+  text-transform: uppercase;
+}
+.button-close-send {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 48px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  transform-origin: 0 0;
+  transform: rotate(0deg) scale(1, 1);
+}
+.button-frame-send {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.button-send {
+  background: var(--flat-enabled-background-color, #000000);
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--flat-enabled-border-color, #000000);
+  border-width: 1px;
+  padding: 4px 0px 4px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+.leading-icon-send {
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+.container-actions-send {
+  border-style: solid;
+  border-color: var(--border-outline-color, rgba(0, 0, 0, 0.08));
+  border-width: 1px 0px 0px 0px;
+  padding: 8px 24px 8px 24px;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+  justify-content: flex-end;
+  height: 64px;
+  position: absolute;
+  right: 0px;
+  left: 0px;
+  bottom: 0px;
+  overflow: hidden;
+}
+.container-actions-optional-send {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.button2-send {
+  padding: 8px 0px 8px 0px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.button3-send {
+  background: var(--normal-enabled-background-color, #ffffff);
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--normal-enabled-border-color, #cdcdcd);
+  border-width: 1px;
+  padding: 4px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.content-send {
+  padding: 0px 4px 0px 4px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.textbox-send {
+  padding: 0px 8px 0px 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.label-send {
+  color: var(--on-normal-active-color, #1a1a1a);
+  text-align: left;
+  font: var(--ui-button, 500 16px/24px "Noto Sans", sans-serif);
+  position: relative;
+}
+.container-actions-primary-send {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.button4-send {
+  padding: 8px 0px 8px 0px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 96px;
+  position: relative;
+}
+.button5-send {
+  background: var(--normal-enabled-background-color, #ffffff);
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--normal-enabled-border-color, #cdcdcd);
+  border-width: 1px;
+  padding: 4px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  position: relative;
+}
+.button6-send {
+  background: var(--raised-enabled-background-color, rgba(0, 0, 0, 0.6));
+  border-radius: 6px;
+  border-style: solid;
+  border-color: var(--raised-enabled-border-color, rgba(0, 0, 0, 0.1));
+  border-width: 1px;
+  padding: 4px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  position: relative;
+}
+.label2-send {
+  color: var(--on-raised-active-color, #ffffff);
+  text-align: left;
+  font: var(--ui-button, 500 16px/24px "Noto Sans", sans-serif);
+  position: relative;
+}

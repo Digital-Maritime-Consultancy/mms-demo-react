@@ -38,7 +38,6 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   const mrnStoreUrl = "http://20.91.195.244";
   const [ownMrn, setOwnMrn] = useState("");
   const [connected, setConnected] = useState(false);
-  const [directMessage, setDirectMessage] = useState<IApplicationMessage>();
   const [receivedMessages, setReceivedMessages] = useState<IApplicationMessage[]>([]);
   const [lastSentMessage, setLastSentMessage] = useState<MmtpMessage>();
   const [subjects, setSubjects] = useState([
@@ -51,6 +50,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   const [ws, setWs] = useState<WebSocket>();
   let subModalRef: any = useRef();
   let connModalRef: any = useRef();
+  let sendModalRef: any = useRef();
   let handleId: NodeJS.Timer;
 
   useEffect(() => {
@@ -70,6 +70,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
     setReceivedMessages([]);
     setConnected(false);
     openConnModal();
+    setOwnMrn("");
   }
   const isWebSocketNotWorking = (): boolean => {
     if (!ws || ws.readyState === WebSocket.CLOSED) {
@@ -191,7 +192,6 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
         const data = msgEvent.data as Blob;
         const bytes = await data.arrayBuffer();
         const response = MmtpMessage.decode(new Uint8Array(bytes));
-        //console.log(response);
 
         if (
           lastSentMessage &&
@@ -234,7 +234,6 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
             const msgs = response!.responseMessage!.applicationMessages;
             msgs!.forEach((msg: IApplicationMessage) => {
               showReceivedMessage(msg);
-              console.log(msg);
             });
           }
         }
@@ -295,6 +294,12 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
     }
   };
 
+  const openSendModal = (mode: MessageMode) => {
+    if (sendModalRef && sendModalRef.current) {
+        sendModalRef.current.openModal(mode);
+    }
+  };
+
   return (
     <Container
       fluid
@@ -338,7 +343,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
             <div className="container-cards-main">
               <div className="tab-main">
                 <div className="button-frame-main">
-                  <div className="button-main">
+                  <div className="button-main" onClick={() => openSendModal(MessageMode.Direct)}>
                     <svg
                       className="_15-contacts"
                       width="24"
@@ -361,7 +366,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
               <div className="dividers"></div>
               <div className="tab-main">
                 <div className="button-frame">
-                  <div className="button-main">
+                  <div className="button-main" onClick={() => openSendModal(MessageMode.Multicast)}>
                     <svg
                       className="_15-pa"
                       width="24"
@@ -420,7 +425,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
               <div className="dividers"></div>
               <div className="tab-main">
                 <div className="button-frame-main">
-                  <div className="button-main">
+                  <div className="button-main" onClick={() => disconnect()}>
                     <svg
                       className="_01-close"
                       width="24"
@@ -474,10 +479,10 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
             unsubscribeMessage={unsubscribeMessage}
           />
           <SendModal
+          ref={sendModalRef}
             mode={MessageMode.Direct}
             mrnStoreUrl={mrnStoreUrl}
             ownMrn={ownMrn}
-            message={directMessage}
             sendMessage={sendMessage}
             subjects={subjects}
           ></SendModal>
