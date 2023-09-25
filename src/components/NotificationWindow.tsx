@@ -75,7 +75,7 @@ export const NotificationWindow = forwardRef(
           <div className="frame-1822">
             <div className="text-time">{!props.message.header?.recipients
       ? props.message.header?.subject!
-      : props.message.header?.recipients?.recipients![0]!}</div>
+      : props.message.header?.sender!}</div>
             <div className="text-time2">
               {!(props.message.header?.recipients) ? "multicast" : "direct"}
             </div>
