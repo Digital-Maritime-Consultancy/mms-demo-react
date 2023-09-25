@@ -48,7 +48,7 @@ export const FileInput = forwardRef((props: FileInputProp, ref) => {
   return (
     <div>
       <label htmlFor="msgArea" className="form-label">
-        Select File Here
+        Select a file less than 1MB
       </label>
       <input
         ref={fileInputRef}

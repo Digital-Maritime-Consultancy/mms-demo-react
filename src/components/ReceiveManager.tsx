@@ -3,20 +3,20 @@ import { Button, Alert, Container } from "react-bootstrap";
 import { IApplicationMessage } from "../generated/mmtp";
 import { payloadToHtmlElem } from "../util/PayloadHandler";
 import { payloadToRC } from "../util/PayloadToRC";
-import NotificationWindow from "./NotificationWindow";
-import "./NotificationManager.css";
+import ReceivedMessage from "./ReceivedMessage";
+import "./ReceiveManager.css";
 
-export interface NotificationManagerProp {
+export interface ReceiveManagerProp {
   messages: IApplicationMessage[];
   setMessages: Dispatch<SetStateAction<IApplicationMessage[]>>;
   reply: (mrn: string) => void;
 }
 
-export const NotificationManager = ({
+export const ReceiveManager = ({
   messages,
   setMessages,
   reply,
-}: NotificationManagerProp) => {
+}: ReceiveManagerProp) => {
   var enc = new TextEncoder();
 
   return (
@@ -55,12 +55,12 @@ export const NotificationManager = ({
             </div>
             <div className="container-wrapper">
               {messages.map((m, idx) => (
-                <NotificationWindow
+                <ReceivedMessage
                   key={idx}
                   message={m}
                   setMessages={setMessages}
                   reply={reply}
-                ></NotificationWindow>
+                ></ReceivedMessage>
               ))}
             </div>
           </div>
@@ -70,4 +70,4 @@ export const NotificationManager = ({
   );
 };
 
-export default NotificationManager;
+export default ReceiveManager;

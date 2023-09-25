@@ -2,14 +2,14 @@ import React, { Dispatch, forwardRef, SetStateAction, useImperativeHandle, useSt
 import { IApplicationMessage } from "../generated/mmtp";
 import { payloadToRC } from "../util/PayloadToRC";
 
-export interface NotificationWindowProp {
+export interface ReceivedMessageProp {
     message: IApplicationMessage;
     setMessages: Dispatch<SetStateAction<IApplicationMessage[]>>;
     reply: (mrn: string) => void;
 }
 
-export const NotificationWindow = forwardRef(
-    (props: NotificationWindowProp, ref) => {
+export const ReceivedMessage = forwardRef(
+    (props: ReceivedMessageProp, ref) => {
   const [show, setShow] = useState(true);
 
   const deleteOne = () => 
@@ -116,4 +116,4 @@ export const NotificationWindow = forwardRef(
   );
 });
 
-export default NotificationWindow;
+export default ReceivedMessage;

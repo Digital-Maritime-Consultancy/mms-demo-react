@@ -6,7 +6,7 @@ export interface InfoModalProp {
 
 export const InfoModal = forwardRef(
   ({ }: InfoModalProp, ref) => {
-    const [showModal, setShowModal] = useState(true);
+    const [showModal, setShowModal] = useState(false);
 
     const handleCloseModal = () => {
       setShowModal(false);

@@ -3,7 +3,7 @@ import { Map } from "./map/Map";
 import { Container, Row, Col } from "react-bootstrap";
 import { ConnectModal } from "./modal/ConnectModal";
 import { SendModal } from "./modal/SendModal";
-import NotificationManager from "./NotificationManager";
+import ReceiveManager from "./ReceiveManager";
 import {
   ApplicationMessage,
   ApplicationMessageHeader,
@@ -495,7 +495,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
           </div>
         </Col>
         <Col style={{ backgroundColor: "#f819fa" }} className="p-0">
-          <NotificationManager
+          <ReceiveManager
             messages={receivedMessages}
             setMessages={setReceivedMessages}
             reply={(mrn: string) => triggerReply(mrn)}
