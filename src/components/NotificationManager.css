@@ -10,7 +10,7 @@
   gap: 0px;
   align-items: flex-start;
   justify-content: flex-start;
-  width: 480px;
+  width: 400px;
   position: relative;
   box-shadow: var(
     --shadow-floating-box-shadow,
@@ -366,7 +366,7 @@
 }
 .container-wrapper {
   position: relative;
-  height: calc(100vh - 200px);
+  max-height: calc(100vh - 200px);
   width: 100%;
   overflow-y: auto;
 }
