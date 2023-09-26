@@ -1,28 +1,62 @@
-import { LatLngTuple } from 'leaflet';
-import { MapContainer, Marker, Popup } from 'react-leaflet'
-import { TileLayer } from 'react-leaflet'
-import { useMap } from 'react-leaflet'
-import { AgentMarker } from './AgentMarker';
+import { LatLngTuple } from "leaflet";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { MapContainer, Marker, Popup } from "react-leaflet";
+import { TileLayer } from "react-leaflet";
+import { useMap } from "react-leaflet";
+import { MMSAgent } from "../../model/MMSAgent";
+import { AgentMarker } from "./AgentMarker";
 
 export interface MapProp {
-  positions: number[][];
+  agents: MMSAgent[];
+  reply: (mrn: string) => void;
 }
 
-export const Map = (
-    {
-      positions,
-    }: MapProp
-    ) =>
-    <MapContainer id="map" className="h-100" center={[55.627884, 12.515491]} zoom={4} scrollWheelZoom={true}>
-  <TileLayer
-    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-  />
-  {
-    positions.map( (pos, idx) => 
-      <AgentMarker key={idx} position={pos as LatLngTuple} mrn={"test"}></AgentMarker>
-    )
-  }
+interface FlyerProps {
+  location: LatLngTuple;
+}
+const Flyer = ({ location }: FlyerProps) => {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo(location);
+  }, [location]);
+  return <></>;
+};
+
+export const Map = forwardRef(({ agents, reply }: MapProp, ref) => {
+  const [location, setLocation] = useState<LatLngTuple>([48.853534, 2.348099]);
+
+  useImperativeHandle(ref, () => ({
+    flyTo: (lat: number, lng: number) => setLocation([lat,lng] as LatLngTuple),
+  }));
   
-</MapContainer>
-        
+  useEffect(() => {}, [location, agents]);
+  return (
+    <MapContainer
+      id="map"
+      className="h-100"
+      center={location}
+      zoom={4}
+      scrollWheelZoom={true}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <Flyer location={location}></Flyer>
+      {agents.map((agent: MMSAgent, idx) => {
+        if (agent.latitude && agent.longitude) {
+        const lat = parseFloat(agent.latitude);
+        const lng = parseFloat(agent.longitude);
+        return (
+          <AgentMarker
+            key={idx}
+            position={[lat, lng] as LatLngTuple}
+            mrn={agent.mrn}
+            onClick={(evt) => reply(agent.mrn)}
+          ></AgentMarker>
+        )}
+        else {return <div key={idx}></div>};
+      })}
+    </MapContainer>
+  );
+});

@@ -33,7 +33,7 @@ export const InfoModal = forwardRef(
           <Modal.Header>
             <Modal.Title>What is MMS?</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
+          <Modal.Body className="label">
             The MMS is a messaging service intended to offer transparent
             seamless information transfer across different communication links
             in a carrier agnostic and geolocation-context sensitive manner. The

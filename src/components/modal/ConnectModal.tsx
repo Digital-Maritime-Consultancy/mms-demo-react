@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
+import { MMSAgent } from "../../model/MMSAgent";
 
 export interface ConnectModalProp {
   mrnStoreUrl: string;
@@ -30,14 +31,30 @@ export const ConnectModal = forwardRef(
       setShowModal(false);
     };
 
+    const checkDuplication = (mrn: string) => {
+      fetch(mrnStoreUrl + "/mrns", {
+        mode: "cors",
+        method: "GET",
+      })
+        .then((resp) => resp.json())
+        .then((resp: MMSAgent[]) => {
+          if (resp.filter((e) => e.mrn === mrn).length > 0) {
+            alert("The given MRN has already registered!");
+            return;
+          }
+          createConnection(edgeRouter, mrn);
+          setShowModal(false);
+        });
+    };
+
     const initialize = () => {
-        setEdgeRouter("");
-        setName("");
-    }
+      setEdgeRouter("");
+      setName("");
+    };
     const handleOpenModal = () => {
-        initialize();
-        setShowModal(true);
-    }
+      initialize();
+      setShowModal(true);
+    };
 
     useImperativeHandle(ref, () => ({
       openModal: () => handleOpenModal(),
@@ -59,10 +76,7 @@ export const ConnectModal = forwardRef(
         return;
       }
       const ownMrn = mrnPrefix + name;
-      const rst = createConnection(edgeRouter, ownMrn);
-      if (rst) {
-        setShowModal(false);
-      }
+      checkDuplication(ownMrn);
     };
 
     return showModal ? (

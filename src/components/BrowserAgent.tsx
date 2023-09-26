@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from "uuid";
 import { disconnect } from "process";
 import { SubscriptionManager } from "./SubscriptionManager";
 import { InfoModal } from "./modal/InfoModal";
+import { MMSAgent } from "../model/MMSAgent";
 
 export interface BrowserAgentProp {
   positions: number[][];
@@ -38,10 +39,12 @@ export enum MessageMode {
 export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   const mrnStoreUrl = "http://20.91.195.244";
   const [ownMrn, setOwnMrn] = useState("");
+  const [myAgent, setMyAgent] = useState<MMSAgent>();
   const [connected, setConnected] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
     IApplicationMessage[]
   >([]);
+  const [agents, setAgents] = useState<MMSAgent[]>([]);
   const [lastSentMessage, setLastSentMessage] = useState<MmtpMessage>();
   const [subjects, setSubjects] = useState([
     "Urn:mrn:mcp:service:dk-dmi:weather_on_route",
@@ -55,6 +58,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   let connModalRef: any = useRef();
   let sendModalRef: any = useRef();
   let infoModalRef: any = useRef();
+  let mapRef: any = useRef();
   let handleId: NodeJS.Timer;
 
   useEffect(() => {
@@ -71,10 +75,77 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   }, [connected]);
 
   const initialize = () => {
+    closeSendModal();
+    setAgents([]);
+    setMyAgent(undefined);
     setReceivedMessages([]);
     setConnected(false);
     openConnModal();
     setOwnMrn("");
+  };
+
+  const getRandomNumberInRange = (min: number, max: number): number => {
+    return Math.random() * (max - min) + min;
+  };
+
+  const createRandomAgents = () => {
+    const resultArray: MMSAgent[] = [];
+
+    for (let i = 0; i < 100; i++) {
+      const pos = getRandomPosition(positions);
+      resultArray.push({
+        mrn: "Urn:mrn:mcp:service:dk-dmi:weather_on_route",
+        edgeRouter: "",
+        latitude: pos[0],
+        longitude: pos[1],
+      } as MMSAgent);
+    }
+    setAgents(resultArray);
+  };
+
+  const getRandomPosition = (seeds: number[][]): string[] => {
+    let [lat, lng] = seeds[Math.floor(Math.random() * seeds.length)];
+    lat += getRandomNumberInRange(-0.5, 0.5);
+    lng += getRandomNumberInRange(-1, 1);
+    return [lat.toString(), lng.toString()];
+  };
+
+  const fetchAgents = async () => {
+    await fetch(mrnStoreUrl + "/mrns", {
+      mode: "cors",
+      method: "GET",
+    })
+      .then((resp) => resp.json())
+      .then((resp: MMSAgent[]) => {
+        setAgents(resp);
+      });
+  };
+
+  const registerAgent = async (mrn: string, edgeRouter: string) => {
+    let pos = getRandomPosition(positions);
+    await fetch(mrnStoreUrl + "/mrn", {
+      method: "POST",
+      body: JSON.stringify({
+        mrn,
+        edgeRouter,
+        latitude: pos[0],
+        longitude: pos[1],
+      }),
+      mode: "cors",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then(() =>
+        setMyAgent({ mrn, edgeRouter, latitude: pos[0], longitude: pos[1] })
+      )
+      .then(() => fetchAgents())
+      .then(() => triggerFly(parseFloat(pos[0]), parseFloat(pos[1])));
+  };
+
+  const deleteAgent = () => {
+    fetch(mrnStoreUrl + "/mrn/" + ownMrn, {
+      method: "DELETE",
+      mode: "cors",
+    }).then(() => {});
   };
 
   const isWebSocketNotWorking = (): boolean => {
@@ -86,7 +157,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   };
 
   const checkReceivedMsg = () => {
-    if (isWebSocketNotWorking()) return;
+    if (isWebSocketNotWorking() || !connected) return;
     const receive = MmtpMessage.create({
       msgType: MsgType.PROTOCOL_MESSAGE,
       uuid: uuidv4(),
@@ -98,6 +169,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
     const bytes = MmtpMessage.encode(receive).finish();
     setLastSentMessage(receive);
     ws!.send(bytes);
+    fetchAgents();
   };
 
   const subscribeMessage = (ps: string) => {
@@ -187,7 +259,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
     initialize();
   };
 
-  const createConnection = (edgeRouter: string, ownMrn: string): boolean => {
+  const connect = (edgeRouter: string, ownMrn: string): boolean => {
     const _ws = new WebSocket(edgeRouter);
 
     _ws.addEventListener("open", () => {
@@ -226,13 +298,8 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
           initialized = true;
 
           _ws.send(msgBlob);
-
-          await fetch(mrnStoreUrl + "/mrn", {
-            method: "POST",
-            body: JSON.stringify({ mrn: ownMrn, edgeRouter: edgeRouter }),
-            mode: "cors",
-            headers: { "Content-Type": "application/json" },
-          });
+          setConnected(true);
+          registerAgent(ownMrn, edgeRouter);
           return true;
         } else {
           if (response.msgType == MsgType.RESPONSE_MESSAGE) {
@@ -265,20 +332,20 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
     });
 
     _ws.addEventListener("close", (evt) => {
+      deleteAgent();
       if (evt.code !== 1000) {
         alert("Connection to Edge Router closed unexpectedly: " + evt.reason);
         initialize();
         return false;
       }
-      fetch(mrnStoreUrl + "/mrn/" + ownMrn, {
-        method: "DELETE",
-        mode: "cors",
-      }).then(() => {});
     });
 
     setWs(_ws);
-    setConnected(true);
     return true;
+  };
+
+  const createConnection = (edgeRouter: string, ownMrn: string): boolean => {
+    return connect(edgeRouter, ownMrn);
   };
 
   const showReceivedMessage = (msg: IApplicationMessage) => {
@@ -301,7 +368,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
 
   const openInfoModal = () => {
     if (infoModalRef && infoModalRef.current) {
-        infoModalRef.current.openModal();
+      infoModalRef.current.openModal();
     }
   };
 
@@ -311,8 +378,22 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
     }
   };
 
+  const closeSendModal = () => {
+    if (sendModalRef && sendModalRef.current) {
+      sendModalRef.current.closeModal();
+    }
+  };
+
   const triggerReply = (mrn: string) => {
-    openSendModal(MessageMode.Direct, mrn);
+    if (mrn !== ownMrn) {
+      openSendModal(MessageMode.Direct, mrn);
+    }
+  };
+
+  const triggerFly = (lat: number, lng: number) => {
+    if (mapRef && mapRef.current) {
+      mapRef.current.flyTo(lat, lng);
+    }
   };
 
   return (
@@ -473,7 +554,10 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
             </div>
             <div className="panel-controls">
               <div className="tab-main">
-                <div className="button-frame-main" onClick={() => openInfoModal()}>
+                <div
+                  className="button-frame-main"
+                  onClick={() => openInfoModal()}
+                >
                   <div className="button-main">
                     <svg
                       className="icon"
@@ -509,12 +593,13 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
           <SendModal
             ref={sendModalRef}
             mode={MessageMode.Direct}
-            mrnStoreUrl={mrnStoreUrl}
             ownMrn={ownMrn}
             sendMessage={sendMessage}
+            agents={agents}
+            fetchAgents={fetchAgents}
             subjects={subjects}
           ></SendModal>
-          <Map positions={positions}></Map>
+          <Map ref={mapRef} agents={agents} reply={triggerReply}></Map>
         </Col>
       </Row>
     </Container>

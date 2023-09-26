@@ -1,5 +1,5 @@
 import { Button, Container, Row } from "react-bootstrap";
-import { Agent } from "../../model/Agent";
+import { MMSAgent } from "../../model/MMSAgent";
 import {
   forwardRef,
   useEffect,
@@ -14,30 +14,29 @@ import "./SendModal.css";
 export interface SendModalProp {
   ownMrn: string;
   mode: MessageMode;
-  mrnStoreUrl: string;
   subjects: string[];
+  agents: MMSAgent[];
   sendMessage: (msg: Uint8Array, mode: MessageMode, endPoint: string) => void;
+  fetchAgents: () => void;
 }
 
 export const SendModal = forwardRef((props: SendModalProp, ref) => {
   const [show, setShow] = useState(false);
   const [bytes, setBytes] = useState<Uint8Array>();
   const [_mode, setMode] = useState<MessageMode>(props.mode);
-  const [agents, setAgents] = useState<Agent[]>([]);
   const [destination, setDestination] = useState("");
   const encoder = new TextEncoder();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   let fileInputRef: any = useRef();
 
   useEffect(() => {
-    fetchMrns();
   }, [props.mode]);
 
   useEffect(() => {
-  }, [destination]);
+  }, [destination, props.agents]);
 
   const handleShow = (mode: MessageMode) => {
-    fetchMrns();
+    props.fetchAgents();
     setMode(mode);
     setShow(true);
   };
@@ -52,18 +51,10 @@ export const SendModal = forwardRef((props: SendModalProp, ref) => {
       handleShow(mode);
       setDestination(recipientMrn!);
     },
+    closeModal: () => setShow(false)
   }));
 
-  const fetchMrns = () => {
-    fetch(props.mrnStoreUrl + "/mrns", {
-      mode: "cors",
-      method: "GET",
-    })
-      .then((resp) => resp.json())
-      .then((resp: Agent[]) =>
-        setAgents(resp.filter((e) => e.mrn !== props.ownMrn))
-      );
-  };
+  
 
   const onSelectChange = (selected: string) => {
     switch (selected) {
@@ -107,7 +98,7 @@ export const SendModal = forwardRef((props: SendModalProp, ref) => {
               <Row>
                 <Row>
                   <label htmlFor="receiver" className="form-label">
-                    Receiver of Message
+                    Send to
                   </label>
                   {_mode === MessageMode.None && (
                     <select
@@ -132,7 +123,8 @@ export const SendModal = forwardRef((props: SendModalProp, ref) => {
                       <option value={""}>
                         ---Please select an MRN---
                       </option>
-                      {agents.map((agent, idx) => (
+                      {props.agents.map((agent, idx) => (
+                        agent.mrn !== props.ownMrn && 
                         <option key={idx} value={agent.mrn}>
                           {agent.mrn}
                         </option>
