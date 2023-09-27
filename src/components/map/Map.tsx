@@ -5,6 +5,7 @@ import { TileLayer } from "react-leaflet";
 import { useMap } from "react-leaflet";
 import { MMSAgent } from "../../model/MMSAgent";
 import { AgentMarker } from "./AgentMarker";
+import { EdgeRouterMarker } from "./EdgeRouterMarker";
 
 export interface MapProp {
   agents: MMSAgent[];
@@ -57,6 +58,8 @@ export const Map = forwardRef(({ agents, reply }: MapProp, ref) => {
         )}
         else {return <div key={idx}></div>};
       })}
+      <EdgeRouterMarker name={"Korea Edge Router"} position={[37.566536, 126.977966]} />
+      <EdgeRouterMarker name={"EU Edge Router"} position={[60.674622, 17.141830]} />
     </MapContainer>
   );
 });
