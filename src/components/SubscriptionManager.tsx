@@ -1,9 +1,10 @@
 import React, { useState, forwardRef, useImperativeHandle } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { Subscription } from "./BrowserAgent";
 import "./SubscriptionManager.css";
 
 export interface SubscriptionManagerProps {
-  subscriptions: string[];
+  subscriptions: Subscription[];
   subscribeMessage: (ps: string) => void;
   unsubscribeMessage: (ps: string) => void;
 }
@@ -26,9 +27,9 @@ export const SubscriptionManager = forwardRef(
       let updatedCheckedItems = [...checkedItems];
       updatedCheckedItems[position] = !updatedCheckedItems[position];
       if (updatedCheckedItems[position] === true) {
-        props.subscribeMessage(props.subscriptions[position]);
+        props.subscribeMessage(props.subscriptions[position]!.value);
       } else {
-        props.unsubscribeMessage(props.subscriptions[position]);
+        props.unsubscribeMessage(props.subscriptions[position]!.value);
       }
       setCheckedItems(updatedCheckedItems);
     };
@@ -102,7 +103,7 @@ export const SubscriptionManager = forwardRef(
                         key={index}
                         type="checkbox"
                         className="label"
-                        label={item}
+                        label={item.name}
                         checked={checkedItems[index]}
                         onChange={() => handleCheckChange(index)}
                       />

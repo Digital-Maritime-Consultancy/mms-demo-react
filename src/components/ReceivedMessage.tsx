@@ -1,9 +1,11 @@
 import React, { Dispatch, forwardRef, SetStateAction, useImperativeHandle, useState } from "react";
 import { IApplicationMessage } from "../generated/mmtp";
 import { payloadToRC } from "../util/PayloadToRC";
+import { Subscription } from "./BrowserAgent";
 
 export interface ReceivedMessageProp {
     message: IApplicationMessage;
+    subscriptions: Subscription[];
     setMessages: Dispatch<SetStateAction<IApplicationMessage[]>>;
     reply: (mrn: string) => void;
 }
@@ -75,7 +77,7 @@ export const ReceivedMessage = forwardRef(
         <div className="frame-1824">
           <div className="frame-1822">
             <div className="text-time">{!props.message.header?.recipients
-      ? props.message.header?.subject!
+      ? props.subscriptions.filter(e => e.value === props.message.header?.subject!)[0].name
       : props.message.header?.sender!}</div>
             <div className="text-time2">
               {!(props.message.header?.recipients) ? "multicast" : "direct"}

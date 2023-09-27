@@ -8,13 +8,13 @@ import {
   useState,
 } from "react";
 import { FileInput } from "../FileInput";
-import { MessageMode } from "../BrowserAgent";
+import { MessageMode, Subscription } from "../BrowserAgent";
 import "./SendModal.css";
 
 export interface SendModalProp {
   ownMrn: string;
   mode: MessageMode;
-  subjects: string[];
+  subscriptions: Subscription[];
   agents: MMSAgent[];
   sendMessage: (msg: Uint8Array, mode: MessageMode, endPoint: string) => void;
   fetchAgents: () => void;
@@ -138,9 +138,9 @@ export const SendModal = forwardRef((props: SendModalProp, ref) => {
                       onChange={(e) => setDestination(e.currentTarget.value)}
                     >
                       <option value="">---Please select a subject---</option>
-                      {props.subjects.map((subject, idx) => (
-                        <option key={idx} value={subject}>
-                          {subject}
+                      {props.subscriptions.map((subject, idx) => (
+                        <option key={idx} value={subject.value}>
+                          {subject.name}
                         </option>
                       ))}
                     </select>

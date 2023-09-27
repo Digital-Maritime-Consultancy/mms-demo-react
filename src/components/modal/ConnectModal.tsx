@@ -17,13 +17,7 @@ export const ConnectModal = forwardRef(
     const mrnPrefix = "urn:mrn:mcp:device:idp1:org1:";
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const inputValue = e.target.value;
-
-      if (inputValue.includes(" ")) {
-        alert("Space is not allowed in your MRN");
-        e.target.value = inputValue.replace(/\s/g, "");
-      }
-      setName(e.currentTarget.value.toLowerCase());
+      setName(e.currentTarget.value.toLowerCase().trim().replace(/\s+/g, "-"));
       setMrn(mrnPrefix + e.currentTarget.value.toLowerCase());
     };
 
@@ -70,9 +64,6 @@ export const ConnectModal = forwardRef(
 
       if (name === "") {
         alert("You need to enter name");
-        return;
-      } else if (name.includes(" ")) {
-        alert("Space is not allowed in your MRN");
         return;
       }
       const ownMrn = mrnPrefix + name;

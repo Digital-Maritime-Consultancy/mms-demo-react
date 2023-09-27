@@ -3,17 +3,20 @@ import { Button, Alert, Container } from "react-bootstrap";
 import { IApplicationMessage } from "../generated/mmtp";
 import { payloadToHtmlElem } from "../util/PayloadHandler";
 import { payloadToRC } from "../util/PayloadToRC";
+import { Subscription } from "./BrowserAgent";
 import ReceivedMessage from "./ReceivedMessage";
 import "./ReceiveManager.css";
 
 export interface ReceiveManagerProp {
   messages: IApplicationMessage[];
+  subscriptions: Subscription[];
   setMessages: Dispatch<SetStateAction<IApplicationMessage[]>>;
   reply: (mrn: string) => void;
 }
 
 export const ReceiveManager = ({
   messages,
+  subscriptions,
   setMessages,
   reply,
 }: ReceiveManagerProp) => {
@@ -57,6 +60,7 @@ export const ReceiveManager = ({
               {messages.map((m, idx) => (
                 <ReceivedMessage
                   key={idx}
+                  subscriptions={subscriptions}
                   message={m}
                   setMessages={setMessages}
                   reply={reply}

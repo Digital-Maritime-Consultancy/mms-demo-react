@@ -36,6 +36,29 @@ export enum MessageMode {
   Multicast,
 }
 
+export interface Subscription {
+  value: string,
+  name: string,
+}
+
+const possibleSubscriptions: Subscription[] = [
+  {
+      value: "Urn:mrn:mcp:service:dk-dmi:weather_on_route",
+      name: "Weather on route",
+  },
+  {
+      value: "Boats",
+      name: "Boats",
+  },
+  {
+      value: "MCP",
+      name: "MCP",
+  },
+  {
+      value: "Weather",
+      name: "Weather",
+  }];
+
 export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   const mrnStoreUrl = "http://20.91.195.244";
   const [ownMrn, setOwnMrn] = useState("");
@@ -46,12 +69,6 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   >([]);
   const [agents, setAgents] = useState<MMSAgent[]>([]);
   const [lastSentMessage, setLastSentMessage] = useState<MmtpMessage>();
-  const [subjects, setSubjects] = useState([
-    "Urn:mrn:mcp:service:dk-dmi:weather_on_route",
-    "Boats",
-    "MCP",
-    "Weather",
-  ]);
   const [reconnectToken, setReconnectToken] = useState("");
   const [ws, setWs] = useState<WebSocket>();
   let subModalRef: any = useRef();
@@ -581,12 +598,13 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
         <Col style={{ backgroundColor: "#f819fa" }} className="p-0">
           <ReceiveManager
             messages={receivedMessages}
+            subscriptions={possibleSubscriptions}
             setMessages={setReceivedMessages}
             reply={(mrn: string) => triggerReply(mrn)}
           />
           <SubscriptionManager
             ref={subModalRef}
-            subscriptions={subjects}
+            subscriptions={possibleSubscriptions}
             subscribeMessage={subscribeMessage}
             unsubscribeMessage={unsubscribeMessage}
           />
@@ -597,7 +615,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
             sendMessage={sendMessage}
             agents={agents}
             fetchAgents={fetchAgents}
-            subjects={subjects}
+            subscriptions={possibleSubscriptions}
           ></SendModal>
           <Map ref={mapRef} agents={agents} reply={triggerReply}></Map>
         </Col>
