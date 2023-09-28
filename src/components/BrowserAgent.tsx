@@ -25,6 +25,7 @@ import { disconnect } from "process";
 import { SubscriptionManager } from "./SubscriptionManager";
 import { InfoModal } from "./modal/InfoModal";
 import { MMSAgent } from "../model/MMSAgent";
+import ErrorAlert from "./ErrorAlert";
 
 export interface BrowserAgentProp {
   positions: number[][];
@@ -75,6 +76,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
   let connModalRef: any = useRef();
   let sendModalRef: any = useRef();
   let infoModalRef: any = useRef();
+  let errAlertRef: any= useRef();
   let mapRef: any = useRef();
   let handleId: NodeJS.Timer;
 
@@ -291,7 +293,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
           lastSentMessage &&
           response.responseMessage?.responseToUuid !== lastSentMessage!.uuid
         ) {
-          alert(
+          console.log(
             "The UUID of the last sent message does not match the UUID being responded to"
           );
         }
@@ -351,7 +353,7 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
     _ws.addEventListener("close", (evt) => {
       deleteAgent();
       if (evt.code !== 1000) {
-        alert("Connection to Edge Router closed unexpectedly: " + evt.reason);
+        openAlert("Connection to Edge Router closed unexpectedly: " + evt.reason);
         initialize();
         return false;
       }
@@ -395,6 +397,12 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
     }
   };
 
+  const openAlert = (content: string) => {
+    if (errAlertRef && errAlertRef.current) {
+      errAlertRef.current.openAlert(content);
+    }
+  };
+
   const closeSendModal = () => {
     if (sendModalRef && sendModalRef.current) {
       sendModalRef.current.closeModal();
@@ -424,6 +432,8 @@ export const BrowserAgent = ({ positions }: BrowserAgentProp) => {
         setMrn={setOwnMrn}
         ref={connModalRef}
       ></ConnectModal>
+
+      <ErrorAlert ref={errAlertRef} />
 
       <InfoModal ref={infoModalRef}></InfoModal>
 
