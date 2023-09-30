@@ -17,8 +17,9 @@ export const ConnectModal = forwardRef(
     const mrnPrefix = "urn:mrn:mcp:device:idp1:org1:";
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setName(e.currentTarget.value.toLowerCase().trim().replace(/\s+/g, "-"));
-      setMrn(mrnPrefix + e.currentTarget.value.toLowerCase());
+      const lastElem = e.currentTarget.value.toLowerCase().trim().replace(/\s+/g, "-");
+      setName(lastElem);
+      setMrn(mrnPrefix + lastElem);
     };
 
     const handleCloseModal = () => {
